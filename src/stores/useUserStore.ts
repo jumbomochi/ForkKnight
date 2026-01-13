@@ -1,96 +1,142 @@
 import { create } from "zustand";
+import { getStorageService } from "@/services/storage";
 import type { User, UserProgress } from "@/types";
 
 interface UserState {
   user: User | null;
   progress: UserProgress | null;
   isLoading: boolean;
+  isInitialized: boolean;
+  initialize: () => Promise<void>;
   setUser: (user: User | null) => void;
   setProgress: (progress: UserProgress | null) => void;
   addXp: (amount: number) => void;
   completeLesson: (lessonId: string) => void;
   completePuzzle: (puzzleId: string) => void;
   updateStreak: () => void;
+  updatePuzzleRating: (newRating: number) => void;
 }
 
 const XP_PER_LEVEL = 100;
 
-export const useUserStore = create<UserState>((set) => ({
+const saveProgress = async (progress: UserProgress | null) => {
+  if (progress) {
+    const storage = getStorageService();
+    await storage.saveUserProgress(progress);
+  }
+};
+
+export const useUserStore = create<UserState>((set, get) => ({
   user: null,
   progress: null,
   isLoading: false,
+  isInitialized: false,
+
+  initialize: async () => {
+    if (get().isInitialized) return;
+
+    set({ isLoading: true });
+    try {
+      const storage = getStorageService();
+      const progress = await storage.getUserProgress();
+      set({ progress, isInitialized: true, isLoading: false });
+    } catch (error) {
+      console.error("Failed to initialize user store:", error);
+      set({ isLoading: false });
+    }
+  },
 
   setUser: (user) => set({ user }),
 
-  setProgress: (progress) => set({ progress }),
+  setProgress: (progress) => {
+    set({ progress });
+    saveProgress(progress);
+  },
 
-  addXp: (amount) =>
-    set((state) => {
-      if (!state.progress) return state;
+  addXp: (amount) => {
+    const state = get();
+    if (!state.progress) return;
 
-      const newXp = state.progress.xp + amount;
-      const newLevel = Math.floor(newXp / XP_PER_LEVEL) + 1;
+    const newXp = state.progress.xp + amount;
+    const newLevel = Math.floor(newXp / XP_PER_LEVEL) + 1;
 
-      return {
-        progress: {
-          ...state.progress,
-          xp: newXp,
-          level: newLevel,
-        },
-      };
-    }),
+    const newProgress = {
+      ...state.progress,
+      xp: newXp,
+      level: newLevel,
+    };
 
-  completeLesson: (lessonId) =>
-    set((state) => {
-      if (!state.progress) return state;
-      if (state.progress.completedLessons.includes(lessonId)) return state;
+    set({ progress: newProgress });
+    saveProgress(newProgress);
+  },
 
-      return {
-        progress: {
-          ...state.progress,
-          completedLessons: [...state.progress.completedLessons, lessonId],
-        },
-      };
-    }),
+  completeLesson: (lessonId) => {
+    const state = get();
+    if (!state.progress) return;
+    if (state.progress.completedLessons.includes(lessonId)) return;
 
-  completePuzzle: (puzzleId) =>
-    set((state) => {
-      if (!state.progress) return state;
-      if (state.progress.completedPuzzles.includes(puzzleId)) return state;
+    const newProgress = {
+      ...state.progress,
+      completedLessons: [...state.progress.completedLessons, lessonId],
+    };
 
-      return {
-        progress: {
-          ...state.progress,
-          completedPuzzles: [...state.progress.completedPuzzles, puzzleId],
-        },
-      };
-    }),
+    set({ progress: newProgress });
+    saveProgress(newProgress);
+  },
 
-  updateStreak: () =>
-    set((state) => {
-      if (!state.progress) return state;
+  completePuzzle: (puzzleId) => {
+    const state = get();
+    if (!state.progress) return;
+    if (state.progress.completedPuzzles.includes(puzzleId)) return;
 
-      const now = new Date();
-      const lastActive = new Date(state.progress.lastActiveAt);
-      const diffDays = Math.floor(
-        (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24)
-      );
+    const newProgress = {
+      ...state.progress,
+      completedPuzzles: [...state.progress.completedPuzzles, puzzleId],
+    };
 
-      let newStreak = state.progress.currentStreak;
+    set({ progress: newProgress });
+    saveProgress(newProgress);
+  },
 
-      if (diffDays === 1) {
-        newStreak += 1;
-      } else if (diffDays > 1) {
-        newStreak = 1;
-      }
+  updatePuzzleRating: (newRating) => {
+    const state = get();
+    if (!state.progress) return;
 
-      return {
-        progress: {
-          ...state.progress,
-          currentStreak: newStreak,
-          longestStreak: Math.max(newStreak, state.progress.longestStreak),
-          lastActiveAt: now,
-        },
-      };
-    }),
+    const newProgress = {
+      ...state.progress,
+      puzzleRating: newRating,
+    };
+
+    set({ progress: newProgress });
+    saveProgress(newProgress);
+  },
+
+  updateStreak: () => {
+    const state = get();
+    if (!state.progress) return;
+
+    const now = new Date();
+    const lastActive = new Date(state.progress.lastActiveAt);
+    const diffDays = Math.floor(
+      (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    let newStreak = state.progress.currentStreak;
+
+    if (diffDays === 1) {
+      newStreak += 1;
+    } else if (diffDays > 1) {
+      newStreak = 1;
+    }
+
+    const newProgress = {
+      ...state.progress,
+      currentStreak: newStreak,
+      longestStreak: Math.max(newStreak, state.progress.longestStreak),
+      lastActiveAt: now,
+    };
+
+    set({ progress: newProgress });
+    saveProgress(newProgress);
+  },
 }));

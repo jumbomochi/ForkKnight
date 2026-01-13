@@ -1,27 +1,10 @@
-import { Tabs } from "expo-router";
-import { Text } from "react-native";
+import { Stack } from "expo-router";
 import { colors } from "@/utils/theme";
 
-function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    index: "🏠",
-    lessons: "📚",
-    puzzles: "🧩",
-    progress: "📊",
-  };
+export default function RootLayout() {
   return (
-    <Text style={{ fontSize: 24, opacity: focused ? 1 : 0.5 }}>
-      {icons[name] || "•"}
-    </Text>
-  );
-}
-
-export default function AppLayout() {
-  return (
-    <Tabs
+    <Stack
       screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textLight,
         headerStyle: {
           backgroundColor: colors.primary,
         },
@@ -31,43 +14,14 @@ export default function AppLayout() {
         },
       }}
     >
-      <Tabs.Screen
-        name="index"
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="lesson/[id]"
         options={{
-          title: "Home",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name="index" focused={focused} />
-          ),
-          headerTitle: "ForkKnight",
+          headerShown: false,
+          presentation: "modal",
         }}
       />
-      <Tabs.Screen
-        name="lessons"
-        options={{
-          title: "Lessons",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name="lessons" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="puzzles"
-        options={{
-          title: "Puzzles",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name="puzzles" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="progress"
-        options={{
-          title: "Progress",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name="progress" focused={focused} />
-          ),
-        }}
-      />
-    </Tabs>
+    </Stack>
   );
 }

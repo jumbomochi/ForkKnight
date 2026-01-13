@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUserStore } from "@/stores/useUserStore";
 import { colors, spacing, fontSize, fontWeight, borderRadius } from "@/utils/theme";
 
 interface StatCardProps {
@@ -34,81 +35,127 @@ function Achievement({ name, description, icon, unlocked }: AchievementProps) {
         <Text style={styles.achievementName}>{name}</Text>
         <Text style={styles.achievementDesc}>{description}</Text>
       </View>
+      {unlocked && <Text style={styles.checkmark}>✓</Text>}
     </View>
   );
 }
 
-const ACHIEVEMENTS: AchievementProps[] = [
-  {
-    name: "First Steps",
-    description: "Complete your first lesson",
-    icon: "🎯",
-    unlocked: false,
-  },
-  {
-    name: "Puzzle Solver",
-    description: "Solve 10 puzzles",
-    icon: "🧩",
-    unlocked: false,
-  },
-  {
-    name: "On Fire!",
-    description: "Maintain a 7-day streak",
-    icon: "🔥",
-    unlocked: false,
-  },
-  {
-    name: "Knight Master",
-    description: "Complete all Knight lessons",
-    icon: "♞",
-    unlocked: false,
-  },
-  {
-    name: "Tactician",
-    description: "Solve 100 tactics puzzles",
-    icon: "⚔️",
-    unlocked: false,
-  },
-];
-
 export default function ProgressScreen() {
+  const progress = useUserStore((state) => state.progress);
+
+  const level = progress?.level ?? 1;
+  const xp = progress?.xp ?? 0;
+  const lessonsCompleted = progress?.completedLessons.length ?? 0;
+  const puzzlesSolved = progress?.completedPuzzles.length ?? 0;
+  const currentStreak = progress?.currentStreak ?? 0;
+  const longestStreak = progress?.longestStreak ?? 0;
+  const puzzleRating = progress?.puzzleRating ?? 600;
+
+  const xpInCurrentLevel = xp % 100;
+  const xpToNextLevel = 100 - xpInCurrentLevel;
+
+  const getLevelTitle = (lvl: number): string => {
+    if (lvl < 3) return "Chess Beginner";
+    if (lvl < 5) return "Chess Learner";
+    if (lvl < 10) return "Chess Student";
+    if (lvl < 15) return "Chess Player";
+    if (lvl < 25) return "Chess Enthusiast";
+    return "Chess Master";
+  };
+
+  const achievements: AchievementProps[] = [
+    {
+      name: "First Steps",
+      description: "Complete your first lesson",
+      icon: "🎯",
+      unlocked: lessonsCompleted >= 1,
+    },
+    {
+      name: "Puzzle Solver",
+      description: "Solve 10 puzzles",
+      icon: "🧩",
+      unlocked: puzzlesSolved >= 10,
+    },
+    {
+      name: "Getting Started",
+      description: "Solve 5 puzzles",
+      icon: "✨",
+      unlocked: puzzlesSolved >= 5,
+    },
+    {
+      name: "On Fire!",
+      description: "Maintain a 7-day streak",
+      icon: "🔥",
+      unlocked: longestStreak >= 7,
+    },
+    {
+      name: "Dedicated Learner",
+      description: "Complete 5 lessons",
+      icon: "📖",
+      unlocked: lessonsCompleted >= 5,
+    },
+    {
+      name: "Tactician",
+      description: "Solve 25 tactics puzzles",
+      icon: "⚔️",
+      unlocked: puzzlesSolved >= 25,
+    },
+    {
+      name: "Rising Star",
+      description: "Reach puzzle rating 800",
+      icon: "⭐",
+      unlocked: puzzleRating >= 800,
+    },
+  ];
+
   return (
     <SafeAreaView style={styles.container} edges={["bottom"]}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.levelSection}>
           <View style={styles.levelCircle}>
-            <Text style={styles.levelNumber}>1</Text>
+            <Text style={styles.levelNumber}>{level}</Text>
           </View>
-          <Text style={styles.levelTitle}>Chess Beginner</Text>
+          <Text style={styles.levelTitle}>{getLevelTitle(level)}</Text>
           <View style={styles.xpBar}>
-            <View style={[styles.xpFill, { width: "0%" }]} />
+            <View style={[styles.xpFill, { width: `${xpInCurrentLevel}%` }]} />
           </View>
-          <Text style={styles.xpText}>0 / 100 XP to Level 2</Text>
+          <Text style={styles.xpText}>
+            {xpInCurrentLevel} / 100 XP ({xpToNextLevel} to Level {level + 1})
+          </Text>
         </View>
 
         <View style={styles.statsGrid}>
-          <StatCard label="Lessons" value={0} icon="📚" />
-          <StatCard label="Puzzles" value={0} icon="🧩" />
-          <StatCard label="Streak" value={0} icon="🔥" />
-          <StatCard label="Rating" value={400} icon="⭐" />
+          <StatCard label="Lessons" value={lessonsCompleted} icon="📚" />
+          <StatCard label="Puzzles" value={puzzlesSolved} icon="🧩" />
+          <StatCard label="Streak" value={currentStreak} icon="🔥" />
+          <StatCard label="Rating" value={puzzleRating} icon="⭐" />
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Achievements</Text>
-          {ACHIEVEMENTS.map((achievement, index) => (
+          <Text style={styles.sectionTitle}>
+            Achievements ({achievements.filter((a) => a.unlocked).length}/
+            {achievements.length})
+          </Text>
+          {achievements.map((achievement, index) => (
             <Achievement key={index} {...achievement} />
           ))}
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Weekly Activity</Text>
-          <View style={styles.weekGrid}>
-            {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
-              <View key={index} style={styles.dayColumn}>
-                <View style={[styles.dayBox, styles.dayInactive]} />
-                <Text style={styles.dayLabel}>{day}</Text>
-              </View>
-            ))}
+          <Text style={styles.sectionTitle}>Stats</Text>
+          <View style={styles.statsDetails}>
+            <View style={styles.statRow}>
+              <Text style={styles.statRowLabel}>Total XP earned</Text>
+              <Text style={styles.statRowValue}>{xp}</Text>
+            </View>
+            <View style={styles.statRow}>
+              <Text style={styles.statRowLabel}>Longest streak</Text>
+              <Text style={styles.statRowValue}>{longestStreak} days</Text>
+            </View>
+            <View style={styles.statRow}>
+              <Text style={styles.statRowLabel}>Current streak</Text>
+              <Text style={styles.statRowValue}>{currentStreak} days</Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -233,30 +280,30 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textLight,
   },
-  weekGrid: {
+  checkmark: {
+    fontSize: 20,
+    color: colors.success,
+    fontWeight: fontWeight.bold,
+  },
+  statsDetails: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+  },
+  statRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: colors.surface,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  dayColumn: {
-    alignItems: "center",
-  },
-  dayBox: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.sm,
-    marginBottom: spacing.xs,
-  },
-  dayActive: {
-    backgroundColor: colors.success,
-  },
-  dayInactive: {
-    backgroundColor: colors.border,
-  },
-  dayLabel: {
-    fontSize: fontSize.xs,
+  statRowLabel: {
+    fontSize: fontSize.md,
     color: colors.textLight,
+  },
+  statRowValue: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+    color: colors.text,
   },
 });
