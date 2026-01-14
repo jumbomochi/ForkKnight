@@ -59,14 +59,14 @@ export const tacticsLessons: Lesson[] = [
         title: "Pawn Forks",
         content:
           "Even pawns can fork! Since pawns capture diagonally, they can attack two pieces at once.",
-        fen: "8/8/2n1b3/3P4/8/8/8/4K3 w - - 0 1",
+        fen: "4k3/8/2n1b3/3P4/8/8/8/4K3 w - - 0 1",
       },
       {
         id: "fork-exercise-2",
         type: "exercise",
         title: "Pawn Fork!",
         content: "Advance your pawn to fork the Knight and Bishop.",
-        fen: "8/8/8/2n1b3/3P4/8/8/4K3 w - - 0 1",
+        fen: "4k3/8/8/2n1b3/3P4/8/8/4K3 w - - 0 1",
         correctAnswer: "d4d5",
         hints: [
           "Pawns capture diagonally",

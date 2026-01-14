@@ -1,0 +1,47 @@
+module.exports = {
+  preset: "ts-jest",
+  testEnvironment: "node",
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@components/(.*)$": "<rootDir>/src/components/$1",
+    "^@services/(.*)$": "<rootDir>/src/services/$1",
+    "^@hooks/(.*)$": "<rootDir>/src/hooks/$1",
+    "^@utils/(.*)$": "<rootDir>/src/utils/$1",
+    "^@types/(.*)$": "<rootDir>/src/types/$1",
+    "^@stores/(.*)$": "<rootDir>/src/stores/$1",
+    "^@data/(.*)$": "<rootDir>/src/data/$1",
+  },
+  testMatch: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
+  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
+  collectCoverageFrom: [
+    "src/services/**/*.{ts,tsx}",
+    "src/data/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/index.ts",
+  ],
+  transform: {
+    "^.+\\.tsx?$": ["ts-jest", {
+      tsconfig: {
+        module: "commonjs",
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+        strict: true,
+        moduleResolution: "node",
+        resolveJsonModule: true,
+        isolatedModules: true,
+        noEmit: true,
+        baseUrl: ".",
+        paths: {
+          "@/*": ["src/*"],
+          "@components/*": ["src/components/*"],
+          "@services/*": ["src/services/*"],
+          "@hooks/*": ["src/hooks/*"],
+          "@utils/*": ["src/utils/*"],
+          "@types/*": ["src/types/*"],
+          "@stores/*": ["src/stores/*"],
+          "@data/*": ["src/data/*"],
+        },
+      },
+    }],
+  },
+};

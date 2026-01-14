@@ -45,6 +45,40 @@ export default function PuzzlesScreen() {
     loadPuzzle(dailyPuzzle);
   }, [loadPuzzle, puzzleService]);
 
+  const tryMove = useCallback(
+    (from: Square, to: Square) => {
+      if (!engine || !currentPuzzle || solved || failed) return false;
+
+      const move = engine.makeMove({ from, to });
+
+      if (move) {
+        setPositions(engine.getBoard());
+        setLastMove({ from, to });
+
+        const moveUci = `${move.from}${move.to}`;
+        if (currentPuzzle.moves.includes(moveUci)) {
+          setSolved(true);
+          setMessage("Correct! Well done!");
+          setPuzzlesSolved((prev) => prev + 1);
+
+          // Award XP based on hints used
+          const xpReward = hintsUsed === 0 ? 15 : hintsUsed === 1 ? 10 : 5;
+          addXp(xpReward);
+          completePuzzle(currentPuzzle.id);
+          puzzleService.markPuzzleCompleted(currentPuzzle.id);
+        } else {
+          engine.undoMove();
+          setPositions(engine.getBoard());
+          setLastMove(null);
+          setMessage("Not quite right - try again!");
+        }
+        return true;
+      }
+      return false;
+    },
+    [engine, currentPuzzle, solved, failed, hintsUsed, addXp, completePuzzle, puzzleService]
+  );
+
   const handleSquarePress = useCallback(
     (square: Square) => {
       if (!engine || !currentPuzzle || solved || failed) return;
@@ -52,47 +86,27 @@ export default function PuzzlesScreen() {
       const piece = positions.find((p) => p.square === square);
 
       if (selectedSquare) {
-        const move = engine.makeMove({ from: selectedSquare, to: square });
-
-        if (move) {
-          setPositions(engine.getBoard());
-          setLastMove({ from: selectedSquare, to: square });
-
-          const moveUci = `${move.from}${move.to}`;
-          if (currentPuzzle.moves.includes(moveUci)) {
-            setSolved(true);
-            setMessage("Correct! Well done!");
-            setPuzzlesSolved((prev) => prev + 1);
-
-            // Award XP based on hints used
-            const xpReward = hintsUsed === 0 ? 15 : hintsUsed === 1 ? 10 : 5;
-            addXp(xpReward);
-            completePuzzle(currentPuzzle.id);
-            puzzleService.markPuzzleCompleted(currentPuzzle.id);
-          } else {
-            engine.undoMove();
-            setPositions(engine.getBoard());
-            setLastMove(null);
-            setMessage("Not quite right - try again!");
-          }
-        }
+        tryMove(selectedSquare, square);
         setSelectedSquare(null);
       } else if (piece && piece.color === engine.turn()) {
         setSelectedSquare(square);
       }
     },
-    [
-      selectedSquare,
-      positions,
-      engine,
-      currentPuzzle,
-      solved,
-      failed,
-      hintsUsed,
-      addXp,
-      completePuzzle,
-      puzzleService,
-    ]
+    [selectedSquare, positions, engine, currentPuzzle, solved, failed, tryMove]
+  );
+
+  const handlePieceDrop = useCallback(
+    (from: Square, to: Square) => {
+      if (!engine || solved || failed) return;
+
+      // Verify the piece being moved is the correct color
+      const piece = positions.find((p) => p.square === from);
+      if (!piece || piece.color !== engine.turn()) return;
+
+      tryMove(from, to);
+      setSelectedSquare(null);
+    },
+    [engine, positions, solved, failed, tryMove]
   );
 
   const getHighlightedSquares = useCallback((): Square[] => {
@@ -172,6 +186,7 @@ export default function PuzzlesScreen() {
             highlightedSquares={getHighlightedSquares()}
             lastMove={lastMove}
             onSquarePress={handleSquarePress}
+            onPieceDrop={handlePieceDrop}
             interactive={!solved && !failed}
             flipped={engine.turn() === "b"}
           />

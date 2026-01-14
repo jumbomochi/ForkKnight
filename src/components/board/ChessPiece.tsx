@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import type { PieceSymbol, Color } from "@/types";
 
 interface ChessPieceProps {
@@ -8,40 +8,38 @@ interface ChessPieceProps {
   size: number;
 }
 
-const PIECE_SYMBOLS: Record<Color, Record<PieceSymbol, string>> = {
-  w: {
-    k: "\u2654", // White King
-    q: "\u2655", // White Queen
-    r: "\u2656", // White Rook
-    b: "\u2657", // White Bishop
-    n: "\u2658", // White Knight
-    p: "\u2659", // White Pawn
-  },
-  b: {
-    k: "\u265A", // Black King
-    q: "\u265B", // Black Queen
-    r: "\u265C", // Black Rook
-    b: "\u265D", // Black Bishop
-    n: "\u265E", // Black Knight
-    p: "\u265F", // Black Pawn
-  },
+// Using chess.com's Neo piece set (PNG format for cross-platform compatibility)
+// Size 150px provides good quality when scaled
+const getPieceUrl = (color: Color, type: PieceSymbol): string => {
+  const colorCode = color === "w" ? "w" : "b";
+  const pieceCode = type.toLowerCase();
+  return `https://www.chess.com/chess-themes/pieces/neo/150/${colorCode}${pieceCode}.png`;
 };
 
 export function ChessPiece({ type, color, size }: ChessPieceProps) {
-  const symbol = PIECE_SYMBOLS[color][type];
+  const imageUrl = getPieceUrl(color, type);
 
   return (
-    <Text style={[styles.piece, { fontSize: size }]} allowFontScaling={false}>
-      {symbol}
-    </Text>
+    <View style={[styles.container, { width: size, height: size }]}>
+      <Image
+        source={{ uri: imageUrl }}
+        style={[styles.piece, { width: size, height: size }]}
+        resizeMode="contain"
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
   piece: {
-    textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    // Shadow for depth effect
+    shadowColor: "#000",
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
 });

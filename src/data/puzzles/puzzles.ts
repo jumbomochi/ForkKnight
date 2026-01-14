@@ -13,8 +13,8 @@ export const puzzles: Puzzle[] = [
   },
   {
     id: "puzzle-002",
-    fen: "r1b2rk1/pppp1ppp/8/8/8/8/PPPP1PPP/R1B2RK1 w - - 0 1",
-    moves: ["f1f8"],
+    fen: "6k1/5ppp/8/8/8/8/8/4RK2 w - - 0 1",
+    moves: ["e1e8"],
     rating: 450,
     themes: ["backRankMate", "mate", "mateIn1"],
   },
@@ -93,7 +93,7 @@ export const puzzles: Puzzle[] = [
   // Discovered Attacks - Rating 700-900
   {
     id: "puzzle-012",
-    fen: "4k3/4q3/8/4N3/8/8/8/B3K3 w - - 0 1",
+    fen: "4k3/5q2/8/4N3/8/8/8/B3K3 w - - 0 1",
     moves: ["e5g6"],
     rating: 750,
     themes: ["discoveredAttack", "short"],
@@ -106,13 +106,13 @@ export const puzzles: Puzzle[] = [
     themes: ["discoveredAttack", "fork"],
   },
 
-  // Queen Traps - Rating 800-1000
+  // Knight Fork - Rating 800-1000
   {
     id: "puzzle-014",
-    fen: "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
-    moves: ["f3h5"],
+    fen: "r1bqkb1r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+    moves: ["e5f7"],
     rating: 850,
-    themes: ["trappedPiece", "short"],
+    themes: ["fork", "attackingF7", "short"],
   },
 
   // Two-Move Mates - Rating 600-900
@@ -125,7 +125,7 @@ export const puzzles: Puzzle[] = [
   },
   {
     id: "puzzle-016",
-    fen: "6k1/5ppp/8/8/8/5Q2/8/4K3 w - - 0 1",
+    fen: "6k1/6pp/8/8/8/5Q2/8/4K3 w - - 0 1",
     moves: ["f3f8"],
     rating: 550,
     themes: ["mate", "mateIn1"],
