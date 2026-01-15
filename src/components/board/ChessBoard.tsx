@@ -1,10 +1,9 @@
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useMemo, memo } from "react";
 import {
   View,
   StyleSheet,
   useWindowDimensions,
   Pressable,
-  LayoutChangeEvent,
 } from "react-native";
 import {
   GestureDetector,
@@ -38,27 +37,27 @@ const RANKS = ["8", "7", "6", "5", "4", "3", "2", "1"];
 interface DraggablePieceProps {
   piece: Position;
   squareSize: number;
-  boardSize: number;
+  _boardSize: number;
   files: string[];
   ranks: string[];
   onDragStart: (square: Square) => void;
   onDragEnd: (from: Square, to: Square) => void;
   onTap: (square: Square) => void;
   interactive: boolean;
-  isSelected: boolean;
+  _isSelected: boolean;
 }
 
-function DraggablePiece({
+const DraggablePiece = memo(function DraggablePiece({
   piece,
   squareSize,
-  boardSize,
+  _boardSize,
   files,
   ranks,
   onDragStart,
   onDragEnd,
   onTap,
   interactive,
-  isSelected,
+  _isSelected,
 }: DraggablePieceProps) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -164,7 +163,17 @@ function DraggablePiece({
       </Animated.View>
     </GestureDetector>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison for memoization - only re-render when necessary
+  return (
+    prevProps.piece.square === nextProps.piece.square &&
+    prevProps.piece.type === nextProps.piece.type &&
+    prevProps.piece.color === nextProps.piece.color &&
+    prevProps.squareSize === nextProps.squareSize &&
+    prevProps.interactive === nextProps.interactive &&
+    prevProps._isSelected === nextProps._isSelected
+  );
+});
 
 export function ChessBoard({
   positions,
@@ -180,8 +189,22 @@ export function ChessBoard({
   const boardSize = Math.min(width - 32, 400);
   const squareSize = boardSize / 8;
 
-  const files = flipped ? [...FILES].reverse() : FILES;
-  const ranks = flipped ? [...RANKS].reverse() : RANKS;
+  // Memoize flipped arrays to prevent unnecessary re-renders
+  const files = useMemo(
+    () => (flipped ? [...FILES].reverse() : FILES),
+    [flipped]
+  );
+  const ranks = useMemo(
+    () => (flipped ? [...RANKS].reverse() : RANKS),
+    [flipped]
+  );
+
+  // Create piece lookup map for O(1) access instead of O(n) array find
+  const pieceMap = useMemo(() => {
+    const map = new Map<Square, Position>();
+    positions.forEach((piece) => map.set(piece.square, piece));
+    return map;
+  }, [positions]);
 
   const isLightSquare = (fileIndex: number, rankIndex: number): boolean => {
     return (fileIndex + rankIndex) % 2 === 0;
@@ -195,19 +218,19 @@ export function ChessBoard({
     return lastMove?.from === square || lastMove?.to === square;
   };
 
-  const handleSquarePress = (square: Square) => {
+  const handleSquarePress = useCallback((square: Square) => {
     if (interactive && onSquarePress) {
       onSquarePress(square);
     }
-  };
+  }, [interactive, onSquarePress]);
 
-  const handleDragStart = (square: Square) => {
+  const handleDragStart = useCallback((square: Square) => {
     if (interactive && onSquarePress) {
       onSquarePress(square);
     }
-  };
+  }, [interactive, onSquarePress]);
 
-  const handleDragEnd = (from: Square, to: Square) => {
+  const handleDragEnd = useCallback((from: Square, to: Square) => {
     if (!interactive) return;
 
     if (from !== to) {
@@ -218,14 +241,16 @@ export function ChessBoard({
         onSquarePress(to);
       }
     }
-  };
+  }, [interactive, onPieceDrop, onSquarePress]);
 
-  const handlePieceTap = (square: Square) => {
-    handleSquarePress(square);
-  };
+  const handlePieceTap = useCallback((square: Square) => {
+    if (interactive && onSquarePress) {
+      onSquarePress(square);
+    }
+  }, [interactive, onSquarePress]);
 
   const getPieceAt = (square: Square): Position | undefined => {
-    return positions.find((p) => p.square === square);
+    return pieceMap.get(square);
   };
 
   return (
@@ -271,14 +296,14 @@ export function ChessBoard({
             key={`${piece.square}-${piece.color}-${piece.type}`}
             piece={piece}
             squareSize={squareSize}
-            boardSize={boardSize}
+            _boardSize={boardSize}
             files={files}
             ranks={ranks}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onTap={handlePieceTap}
             interactive={interactive}
-            isSelected={selectedSquare === piece.square}
+            _isSelected={selectedSquare === piece.square}
           />
         ))}
       </View>

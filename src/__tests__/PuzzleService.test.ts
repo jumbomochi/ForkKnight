@@ -99,24 +99,14 @@ describe("PuzzleService", () => {
     });
   });
 
-  describe("puzzle completion tracking", () => {
-    it("should mark puzzle as completed", () => {
-      expect(service.isPuzzleCompleted("puzzle-001")).toBe(false);
-      service.markPuzzleCompleted("puzzle-001");
-      expect(service.isPuzzleCompleted("puzzle-001")).toBe(true);
+  describe("getCompletedCount", () => {
+    it("should return count from provided array", () => {
+      expect(service.getCompletedCount([])).toBe(0);
+      expect(service.getCompletedCount(["puzzle-001", "puzzle-002"])).toBe(2);
     });
 
-    it("should track completed count", () => {
+    it("should default to 0 with no argument", () => {
       expect(service.getCompletedCount()).toBe(0);
-      service.markPuzzleCompleted("puzzle-001");
-      service.markPuzzleCompleted("puzzle-002");
-      expect(service.getCompletedCount()).toBe(2);
-    });
-
-    it("should not double count same puzzle", () => {
-      service.markPuzzleCompleted("puzzle-001");
-      service.markPuzzleCompleted("puzzle-001");
-      expect(service.getCompletedCount()).toBe(1);
     });
   });
 
@@ -167,16 +157,20 @@ describe("PuzzleService", () => {
       expect(puzzle).toBeDefined();
     });
 
+    it("should return puzzle near player rating with empty completed list", () => {
+      const puzzle = service.getNextPuzzle(600, []);
+      expect(puzzle).toBeDefined();
+    });
+
     it("should not return completed puzzles", () => {
       const allPuzzles = service.getAllPuzzles();
       // Mark all but one as completed
-      allPuzzles.slice(0, -1).forEach((p) => {
-        service.markPuzzleCompleted(p.id);
-      });
+      const completedIds = allPuzzles.slice(0, -1).map((p) => p.id);
+      const lastPuzzle = allPuzzles[allPuzzles.length - 1];
 
-      const puzzle = service.getNextPuzzle(600);
+      const puzzle = service.getNextPuzzle(600, completedIds);
       expect(puzzle).toBeDefined();
-      expect(service.isPuzzleCompleted(puzzle!.id)).toBe(false);
+      expect(puzzle!.id).toBe(lastPuzzle!.id);
     });
   });
 

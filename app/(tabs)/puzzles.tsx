@@ -24,25 +24,35 @@ export default function PuzzlesScreen() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [puzzlesSolved, setPuzzlesSolved] = useState(0);
 
-  const loadPuzzle = useCallback((puzzle: Puzzle) => {
-    const newEngine = createChessEngine(puzzle.fen);
-    setEngine(newEngine);
+  const loadPuzzle = useCallback((puzzle: Puzzle, existingEngine: ChessEngine | null) => {
+    let activeEngine: ChessEngine;
+
+    if (existingEngine) {
+      // Reuse existing engine instance
+      existingEngine.loadFen(puzzle.fen);
+      activeEngine = existingEngine;
+    } else {
+      // Create new engine only if none exists
+      activeEngine = createChessEngine(puzzle.fen);
+      setEngine(activeEngine);
+    }
+
     setCurrentPuzzle(puzzle);
-    setPositions(newEngine.getBoard());
+    setPositions(activeEngine.getBoard());
     setSelectedSquare(null);
     setLastMove(null);
     setSolved(false);
     setFailed(false);
     setHintsUsed(0);
 
-    const turnText = newEngine.turn() === "w" ? "White" : "Black";
+    const turnText = activeEngine.turn() === "w" ? "White" : "Black";
     setMessage(`${turnText} to move - Find the best move!`);
   }, []);
 
   useEffect(() => {
     // Load daily puzzle on mount
     const dailyPuzzle = puzzleService.getDailyPuzzle();
-    loadPuzzle(dailyPuzzle);
+    loadPuzzle(dailyPuzzle, null);
   }, [loadPuzzle, puzzleService]);
 
   const tryMove = useCallback(
@@ -65,7 +75,6 @@ export default function PuzzlesScreen() {
           const xpReward = hintsUsed === 0 ? 15 : hintsUsed === 1 ? 10 : 5;
           addXp(xpReward);
           completePuzzle(currentPuzzle.id);
-          puzzleService.markPuzzleCompleted(currentPuzzle.id);
         } else {
           engine.undoMove();
           setPositions(engine.getBoard());
@@ -143,9 +152,10 @@ export default function PuzzlesScreen() {
 
   const handleNextPuzzle = () => {
     const playerRating = progress?.puzzleRating ?? 600;
-    const nextPuzzle = puzzleService.getNextPuzzle(playerRating);
+    const completedPuzzles = progress?.completedPuzzles ?? [];
+    const nextPuzzle = puzzleService.getNextPuzzle(playerRating, completedPuzzles);
     if (nextPuzzle) {
-      loadPuzzle(nextPuzzle);
+      loadPuzzle(nextPuzzle, engine);
     }
   };
 
@@ -171,7 +181,7 @@ export default function PuzzlesScreen() {
             <Text style={styles.title}>Puzzle Training</Text>
             <Text style={styles.subtitle}>
               Solved today: {puzzlesSolved} | Total:{" "}
-              {puzzleService.getCompletedCount()}/{puzzleService.getTotalCount()}
+              {progress?.completedPuzzles?.length ?? 0}/{puzzleService.getTotalCount()}
             </Text>
           </View>
           <View style={styles.ratingBadge}>

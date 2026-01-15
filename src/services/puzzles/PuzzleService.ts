@@ -3,11 +3,9 @@ import type { Puzzle } from "@/types";
 
 export class PuzzleService {
   private puzzles: Puzzle[];
-  private completedPuzzleIds: Set<string>;
 
   constructor() {
     this.puzzles = puzzles;
-    this.completedPuzzleIds = new Set();
   }
 
   getAllPuzzles(): Puzzle[] {
@@ -41,22 +39,23 @@ export class PuzzleService {
     return available[randomIndex];
   }
 
-  getNextPuzzle(currentRating: number): Puzzle | undefined {
+  getNextPuzzle(currentRating: number, completedPuzzleIds: string[] = []): Puzzle | undefined {
     // Find puzzles within ±100 rating of the player
     const targetMin = Math.max(400, currentRating - 100);
     const targetMax = currentRating + 100;
+    const completedSet = new Set(completedPuzzleIds);
 
     const suitable = this.puzzles.filter(
       (p) =>
         p.rating >= targetMin &&
         p.rating <= targetMax &&
-        !this.completedPuzzleIds.has(p.id)
+        !completedSet.has(p.id)
     );
 
     if (suitable.length === 0) {
       // If no uncompleted puzzles in range, get any uncompleted puzzle
       const uncompleted = this.puzzles.filter(
-        (p) => !this.completedPuzzleIds.has(p.id)
+        (p) => !completedSet.has(p.id)
       );
       if (uncompleted.length === 0) return this.getRandomPuzzle();
       return uncompleted[Math.floor(Math.random() * uncompleted.length)];
@@ -67,23 +66,16 @@ export class PuzzleService {
 
   getDailyPuzzle(): Puzzle {
     // Use the current date to deterministically select a puzzle
+    // Use ISO date string to avoid getMonth() returning 0-11 causing collisions
     const today = new Date();
-    const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-    const hash = this.simpleHash(dateString);
+    const dateString = today.toISOString().split("T")[0]; // "YYYY-MM-DD" format
+    const hash = this.simpleHash(dateString!);
     const index = hash % this.puzzles.length;
     return this.puzzles[index] as Puzzle;
   }
 
-  markPuzzleCompleted(puzzleId: string): void {
-    this.completedPuzzleIds.add(puzzleId);
-  }
-
-  isPuzzleCompleted(puzzleId: string): boolean {
-    return this.completedPuzzleIds.has(puzzleId);
-  }
-
-  getCompletedCount(): number {
-    return this.completedPuzzleIds.size;
+  getCompletedCount(completedPuzzleIds: string[] = []): number {
+    return completedPuzzleIds.length;
   }
 
   getTotalCount(): number {

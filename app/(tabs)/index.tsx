@@ -33,7 +33,8 @@ export default function HomeScreen() {
   const currentStreak = progress?.currentStreak ?? 0;
   const level = progress?.level ?? 1;
   const xp = progress?.xp ?? 0;
-  const xpToNextLevel = ((level) * 100) - xp;
+  // Calculate XP remaining to next level (always 1-100, never negative)
+  const xpToNextLevel = 100 - (xp % 100) || 100;
 
   return (
     <SafeAreaView style={styles.container} edges={["bottom"]}>
