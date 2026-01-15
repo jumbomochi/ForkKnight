@@ -125,7 +125,7 @@ export const puzzles: Puzzle[] = [
   },
   {
     id: "puzzle-016",
-    fen: "6k1/6pp/8/8/8/5Q2/8/4K3 w - - 0 1",
+    fen: "4R1k1/6pp/8/8/8/5Q2/8/4K3 w - - 0 1",
     moves: ["f3f8"],
     rating: 550,
     themes: ["mate", "mateIn1"],
