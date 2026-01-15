@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Modal, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChessBoard } from "@/components/board";
 import { Button } from "@/components/common";
@@ -23,6 +23,8 @@ export default function PuzzlesScreen() {
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [puzzlesSolved, setPuzzlesSolved] = useState(0);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [xpEarned, setXpEarned] = useState(0);
 
   const loadPuzzle = useCallback((puzzle: Puzzle, existingEngine: ChessEngine | null) => {
     let activeEngine: ChessEngine;
@@ -73,8 +75,12 @@ export default function PuzzlesScreen() {
 
           // Award XP based on hints used
           const xpReward = hintsUsed === 0 ? 15 : hintsUsed === 1 ? 10 : 5;
+          setXpEarned(xpReward);
           addXp(xpReward);
           completePuzzle(currentPuzzle.id);
+
+          // Show success modal after a brief delay to let the move animate
+          setTimeout(() => setShowSuccessModal(true), 300);
         } else {
           engine.undoMove();
           setPositions(engine.getBoard());
@@ -161,6 +167,10 @@ export default function PuzzlesScreen() {
 
   const handleSkip = () => {
     handleNextPuzzle();
+  };
+
+  const handleContinue = () => {
+    setShowSuccessModal(false);
   };
 
   if (!currentPuzzle || !engine) {
@@ -257,6 +267,34 @@ export default function PuzzlesScreen() {
             </>
           )}
         </View>
+
+        {/* Success Modal */}
+        <Modal
+          visible={showSuccessModal}
+          transparent
+          animationType="fade"
+          onRequestClose={handleContinue}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Puzzle Solved!</Text>
+              <Text style={styles.modalEmoji}>🎉</Text>
+              <Text style={styles.modalMessage}>
+                {hintsUsed === 0
+                  ? "Perfect! You solved it without any hints!"
+                  : hintsUsed === 1
+                  ? "Great job! You only needed one hint."
+                  : "Well done! Keep practicing to use fewer hints."}
+              </Text>
+              <View style={styles.xpBadge}>
+                <Text style={styles.xpText}>+{xpEarned} XP</Text>
+              </View>
+              <Pressable style={styles.continueButton} onPress={handleContinue}>
+                <Text style={styles.continueButtonText}>Continue</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -366,5 +404,67 @@ const styles = StyleSheet.create({
   actionButton: {
     marginHorizontal: spacing.xs,
     minWidth: 80,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: spacing.lg,
+  },
+  modalContent: {
+    backgroundColor: colors.background,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    alignItems: "center",
+    width: "100%",
+    maxWidth: 320,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    color: colors.success,
+    marginBottom: spacing.sm,
+  },
+  modalEmoji: {
+    fontSize: 48,
+    marginBottom: spacing.md,
+  },
+  modalMessage: {
+    fontSize: fontSize.md,
+    color: colors.text,
+    textAlign: "center",
+    marginBottom: spacing.lg,
+    lineHeight: 22,
+  },
+  xpBadge: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.round,
+    marginBottom: spacing.lg,
+  },
+  xpText: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    color: colors.textInverse,
+  },
+  continueButton: {
+    backgroundColor: colors.success,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    width: "100%",
+  },
+  continueButtonText: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+    color: colors.textInverse,
+    textAlign: "center",
   },
 });
