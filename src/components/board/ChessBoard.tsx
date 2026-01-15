@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, memo } from "react";
 import {
   View,
+  Text,
   StyleSheet,
   useWindowDimensions,
   Pressable,
@@ -284,6 +285,30 @@ export function ChessBoard({
                   {highlighted && !piece && (
                     <View style={styles.moveIndicator} />
                   )}
+                  {/* Rank notation (1-8) on leftmost file */}
+                  {fileIndex === 0 && (
+                    <Text
+                      style={[
+                        styles.notation,
+                        styles.rankNotation,
+                        { color: isLight ? colors.boardDark : colors.boardLight },
+                      ]}
+                    >
+                      {rank}
+                    </Text>
+                  )}
+                  {/* File notation (a-h) on bottom rank */}
+                  {rankIndex === 7 && (
+                    <Text
+                      style={[
+                        styles.notation,
+                        styles.fileNotation,
+                        { color: isLight ? colors.boardDark : colors.boardLight },
+                      ]}
+                    >
+                      {file}
+                    </Text>
+                  )}
                 </Pressable>
               );
             })}
@@ -358,5 +383,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
+  },
+  notation: {
+    position: "absolute",
+    fontSize: 9,
+    fontWeight: "700",
+  },
+  rankNotation: {
+    top: 1,
+    left: 2,
+  },
+  fileNotation: {
+    bottom: 0,
+    right: 2,
   },
 });

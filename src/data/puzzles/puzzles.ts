@@ -6,7 +6,7 @@ export const puzzles: Puzzle[] = [
   // Back Rank Mates - Rating 400-600
   {
     id: "puzzle-001",
-    fen: "6k1/5ppp/8/8/8/8/8/R3K3 w Q - 0 1",
+    fen: "6k1/5ppp/8/8/8/8/8/R3K3 w - - 0 1",
     moves: ["a1a8"],
     rating: 400,
     themes: ["backRankMate", "mate", "mateIn1", "short"],
@@ -45,17 +45,17 @@ export const puzzles: Puzzle[] = [
   },
   {
     id: "puzzle-006",
-    fen: "4k3/8/8/8/r7/8/3N4/4K3 w - - 0 1",
-    moves: ["d2c4"],
+    fen: "r3k3/8/8/3N4/8/8/8/4K3 w q - 0 1",
+    moves: ["d5c7"],
     rating: 580,
-    themes: ["fork", "short"],
+    themes: ["fork", "knightFork", "short"],
   },
   {
     id: "puzzle-007",
     fen: "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
     moves: ["f3g5"],
     rating: 620,
-    themes: ["fork", "hangingPiece"],
+    themes: ["attackingF7", "hangingPiece", "threat"],
   },
 
   // Simple Pins - Rating 600-800
@@ -71,7 +71,7 @@ export const puzzles: Puzzle[] = [
     fen: "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 3",
     moves: ["f3g5"],
     rating: 700,
-    themes: ["pin", "attackingF7"],
+    themes: ["attackingF7", "threat"],
   },
 
   // Simple Skewers - Rating 650-800
@@ -84,10 +84,10 @@ export const puzzles: Puzzle[] = [
   },
   {
     id: "puzzle-011",
-    fen: "4k3/4q3/8/8/8/8/4R3/4K3 w - - 0 1",
-    moves: ["e2e7"],
+    fen: "4k3/8/8/4q3/8/8/4R3/4K3 w - - 0 1",
+    moves: ["e2e8", "e5e8", "e1e8"],
     rating: 720,
-    themes: ["skewer", "short"],
+    themes: ["skewer", "materialGain"],
   },
 
   // Discovered Attacks - Rating 700-900
@@ -103,7 +103,7 @@ export const puzzles: Puzzle[] = [
     fen: "r1bqkb1r/pppp1ppp/2n2n2/4N3/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 4",
     moves: ["f6e4"],
     rating: 800,
-    themes: ["discoveredAttack", "fork"],
+    themes: ["counterattack", "hangingPiece"],
   },
 
   // Knight Fork - Rating 800-1000
@@ -185,7 +185,7 @@ export const puzzles: Puzzle[] = [
     fen: "r1bqkbnr/pppppppp/2n5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2",
     moves: ["c6d4"],
     rating: 700,
-    themes: ["fork", "center"],
+    themes: ["center", "pawnGrab"],
   },
   {
     id: "puzzle-024",
@@ -202,20 +202,20 @@ export const puzzles: Puzzle[] = [
     themes: ["fork", "center"],
   },
 
-  // Multi-move Puzzles - Mate in 2 patterns
+  // Multi-move Puzzles - Tactical sequences
   {
     id: "puzzle-026",
-    fen: "6k1/5ppp/8/8/8/8/5PPP/R3K2R w K - 0 1",
-    moves: ["a1a8", "g8h7", "a8h8"],
+    fen: "6k1/5pp1/7p/8/8/8/5PPP/R5K1 w - - 0 1",
+    moves: ["a1a8", "g8h7", "a8a7"],
     rating: 550,
-    themes: ["mateIn2", "backRankMate", "rookEndgame"],
+    themes: ["rook", "activity", "attack"],
   },
   {
     id: "puzzle-027",
-    fen: "r3k3/5ppp/8/8/8/5N2/5PPP/4K3 w q - 0 1",
-    moves: ["f3d4", "e8d8", "d4c6"],
+    fen: "r3k3/8/8/4N3/8/8/8/4K3 w q - 0 1",
+    moves: ["e5c6", "e8d8", "c6a7"],
     rating: 600,
-    themes: ["mateIn2", "fork", "knightEndgame"],
+    themes: ["fork", "knightFork", "materialGain"],
   },
   {
     id: "puzzle-028",
@@ -226,17 +226,17 @@ export const puzzles: Puzzle[] = [
   },
   {
     id: "puzzle-029",
-    fen: "r3kb1r/ppp2ppp/2n5/3q4/8/3N4/PPP2PPP/R1BQK2R w KQkq - 0 1",
-    moves: ["d3b4", "d5d1", "b4c6"],
-    rating: 580,
-    themes: ["fork", "materialGain", "knightFork"],
+    fen: "r1b1kb1r/pppp1ppp/2n2n2/4N3/2B1P2q/8/PPPP1PPP/RNBQK2R w KQkq - 0 1",
+    moves: ["e5f7", "e8f7", "c4g8"],
+    rating: 700,
+    themes: ["sacrifice", "attackingF7", "materialGain"],
   },
   {
     id: "puzzle-030",
-    fen: "6rk/5Npp/8/8/8/8/5PPP/6K1 w - - 0 1",
-    moves: ["f7h6", "g8g7", "h6f7"],
-    rating: 750,
-    themes: ["mateIn2", "smotheredMate", "knightEndgame"],
+    fen: "r1bqkb1r/pppp1Npp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 1",
+    moves: ["d8e7", "f7h8", "e7c5"],
+    rating: 650,
+    themes: ["fork", "defense", "materialGain"],
   },
 ];
 

@@ -26,6 +26,7 @@ export default function PuzzlesScreen() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [moveIndex, setMoveIndex] = useState(0);
+  const [solutionRevealed, setSolutionRevealed] = useState(false);
 
   const loadPuzzle = useCallback((puzzle: Puzzle, existingEngine: ChessEngine | null) => {
     let activeEngine: ChessEngine;
@@ -48,6 +49,7 @@ export default function PuzzlesScreen() {
     setFailed(false);
     setHintsUsed(0);
     setMoveIndex(0);
+    setSolutionRevealed(false);
 
     const turnText = activeEngine.turn() === "w" ? "White" : "Black";
     setMessage(`${turnText} to move - Find the best move!`);
@@ -204,6 +206,30 @@ export default function PuzzlesScreen() {
     setHintsUsed((prev) => prev + 1);
   };
 
+  const formatMove = (uci: string): string => {
+    const from = uci.slice(0, 2);
+    const to = uci.slice(2, 4);
+    const promotionChar = uci[4];
+    const promotion = promotionChar ? `=${promotionChar.toUpperCase()}` : "";
+    return `${from}-${to}${promotion}`;
+  };
+
+  const handleRevealSolution = () => {
+    if (!currentPuzzle) return;
+    setSolutionRevealed(true);
+
+    // Format solution: show player moves (even indices: 0, 2, 4...)
+    const playerMoves = currentPuzzle.moves
+      .filter((_, i) => i % 2 === 0)
+      .map(formatMove);
+
+    const solutionText = playerMoves.length > 1
+      ? `Solution: ${playerMoves.join(" → ")}`
+      : `Solution: ${playerMoves[0]}`;
+
+    setMessage(solutionText);
+  };
+
   const handleReset = () => {
     if (!currentPuzzle || !engine) return;
     engine.loadFen(currentPuzzle.fen);
@@ -213,6 +239,7 @@ export default function PuzzlesScreen() {
     setSolved(false);
     setFailed(false);
     setMoveIndex(0);
+    setSolutionRevealed(false);
 
     const turnText = engine.turn() === "w" ? "White" : "Black";
     setMessage(`${turnText} to move - Find the best move!`);
@@ -307,13 +334,22 @@ export default function PuzzlesScreen() {
             <Button title="Next Puzzle" onPress={handleNextPuzzle} fullWidth />
           ) : (
             <>
-              <Button
-                title={`Hint${hintsUsed > 0 ? ` (${hintsUsed})` : ""}`}
-                onPress={handleHint}
-                variant="outline"
-                style={styles.actionButton}
-                disabled={hintsUsed >= 3}
-              />
+              {hintsUsed >= 3 && !solutionRevealed ? (
+                <Button
+                  title="Reveal Solution"
+                  onPress={handleRevealSolution}
+                  variant="outline"
+                  style={styles.actionButton}
+                />
+              ) : (
+                <Button
+                  title={`Hint${hintsUsed > 0 ? ` (${hintsUsed})` : ""}`}
+                  onPress={handleHint}
+                  variant="outline"
+                  style={styles.actionButton}
+                  disabled={hintsUsed >= 3}
+                />
+              )}
               <Button
                 title="Reset"
                 onPress={handleReset}
