@@ -201,6 +201,43 @@ export const puzzles: Puzzle[] = [
     rating: 780,
     themes: ["fork", "center"],
   },
+
+  // Multi-move Puzzles - Mate in 2 patterns
+  {
+    id: "puzzle-026",
+    fen: "6k1/5ppp/8/8/8/8/5PPP/R3K2R w K - 0 1",
+    moves: ["a1a8", "g8h7", "a8h8"],
+    rating: 550,
+    themes: ["mateIn2", "backRankMate", "rookEndgame"],
+  },
+  {
+    id: "puzzle-027",
+    fen: "r3k3/5ppp/8/8/8/5N2/5PPP/4K3 w q - 0 1",
+    moves: ["f3d4", "e8d8", "d4c6"],
+    rating: 600,
+    themes: ["mateIn2", "fork", "knightEndgame"],
+  },
+  {
+    id: "puzzle-028",
+    fen: "6k1/5p1p/6p1/8/8/6Q1/5PPP/R5K1 w - - 0 1",
+    moves: ["a1a8", "g8g7", "g3g7"],
+    rating: 650,
+    themes: ["mateIn2", "backRankMate", "queenRookMate"],
+  },
+  {
+    id: "puzzle-029",
+    fen: "r3kb1r/ppp2ppp/2n5/3q4/8/3N4/PPP2PPP/R1BQK2R w KQkq - 0 1",
+    moves: ["d3b4", "d5d1", "b4c6"],
+    rating: 580,
+    themes: ["fork", "materialGain", "knightFork"],
+  },
+  {
+    id: "puzzle-030",
+    fen: "6rk/5Npp/8/8/8/8/5PPP/6K1 w - - 0 1",
+    moves: ["f7h6", "g8g7", "h6f7"],
+    rating: 750,
+    themes: ["mateIn2", "smotheredMate", "knightEndgame"],
+  },
 ];
 
 export default puzzles;

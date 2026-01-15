@@ -18,6 +18,9 @@ export const colors = {
   boardDark: "#B58863",
   highlight: "#FFFF00",
   lastMove: "#CDD26A",
+  moveHighlight: "rgba(0, 255, 0, 0.3)",
+  moveIndicator: "rgba(0, 0, 0, 0.2)",
+  exerciseGreen: "#4CAF50",
 
   border: "#E1E8ED",
 };

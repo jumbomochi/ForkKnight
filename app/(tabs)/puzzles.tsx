@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { View, Text, StyleSheet, Modal, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChessBoard } from "@/components/board";
@@ -7,11 +7,11 @@ import { createChessEngine, ChessEngine } from "@/services/chess";
 import { getPuzzleService } from "@/services/puzzles";
 import { useUserStore } from "@/stores/useUserStore";
 import { colors, spacing, fontSize, fontWeight, borderRadius } from "@/utils/theme";
-import type { Square, Puzzle } from "@/types";
+import type { Square, Puzzle, PieceSymbol } from "@/types";
 
 export default function PuzzlesScreen() {
-  const puzzleService = getPuzzleService();
-  const { progress, addXp, completePuzzle } = useUserStore();
+  const puzzleService = useMemo(() => getPuzzleService(), []);
+  const { progress, addXp, completePuzzle, updatePuzzleRating } = useUserStore();
 
   const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle | null>(null);
   const [engine, setEngine] = useState<ChessEngine | null>(null);
@@ -25,6 +25,7 @@ export default function PuzzlesScreen() {
   const [puzzlesSolved, setPuzzlesSolved] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
+  const [moveIndex, setMoveIndex] = useState(0);
 
   const loadPuzzle = useCallback((puzzle: Puzzle, existingEngine: ChessEngine | null) => {
     let activeEngine: ChessEngine;
@@ -46,6 +47,7 @@ export default function PuzzlesScreen() {
     setSolved(false);
     setFailed(false);
     setHintsUsed(0);
+    setMoveIndex(0);
 
     const turnText = activeEngine.turn() === "w" ? "White" : "Black";
     setMessage(`${turnText} to move - Find the best move!`);
@@ -67,20 +69,49 @@ export default function PuzzlesScreen() {
         setPositions(engine.getBoard());
         setLastMove({ from, to });
 
-        const moveUci = `${move.from}${move.to}`;
-        if (currentPuzzle.moves.includes(moveUci)) {
-          setSolved(true);
-          setMessage("Correct! Well done!");
-          setPuzzlesSolved((prev) => prev + 1);
+        // Check if move matches the expected move at current index
+        const moveUci = `${move.from}${move.to}${move.promotion || ""}`;
+        const expectedMove = currentPuzzle.moves[moveIndex];
 
-          // Award XP based on hints used
-          const xpReward = hintsUsed === 0 ? 15 : hintsUsed === 1 ? 10 : 5;
-          setXpEarned(xpReward);
-          addXp(xpReward);
-          completePuzzle(currentPuzzle.id);
+        if (expectedMove && moveUci === expectedMove) {
+          const nextMoveIndex = moveIndex + 1;
 
-          // Show success modal after a brief delay to let the move animate
-          setTimeout(() => setShowSuccessModal(true), 300);
+          // Check if there are more moves (opponent response + player moves)
+          if (nextMoveIndex < currentPuzzle.moves.length) {
+            // Play opponent's response after a short delay
+            const opponentMove = currentPuzzle.moves[nextMoveIndex];
+            if (opponentMove) {
+              setTimeout(() => {
+                const opFrom = opponentMove.slice(0, 2) as Square;
+                const opTo = opponentMove.slice(2, 4) as Square;
+                const opPromotion = opponentMove.length > 4 ? opponentMove[4] as PieceSymbol : undefined;
+
+                const opResult = engine.makeMove({
+                  from: opFrom,
+                  to: opTo,
+                  promotion: opPromotion,
+                });
+
+                if (opResult) {
+                  setPositions(engine.getBoard());
+                  setLastMove({ from: opFrom, to: opTo });
+                  setMoveIndex(nextMoveIndex + 1);
+
+                  // Check if puzzle is complete after opponent move
+                  if (nextMoveIndex + 1 >= currentPuzzle.moves.length) {
+                    completePuzzleSolve();
+                  } else {
+                    setMessage("Good! Keep going...");
+                  }
+                }
+              }, 400);
+            }
+            setMoveIndex(nextMoveIndex);
+            setMessage("Correct! Opponent is responding...");
+          } else {
+            // Puzzle complete - no more moves
+            completePuzzleSolve();
+          }
         } else {
           engine.undoMove();
           setPositions(engine.getBoard());
@@ -91,8 +122,34 @@ export default function PuzzlesScreen() {
       }
       return false;
     },
-    [engine, currentPuzzle, solved, failed, hintsUsed, addXp, completePuzzle, puzzleService]
+    [engine, currentPuzzle, solved, failed, moveIndex]
   );
+
+  const completePuzzleSolve = useCallback(() => {
+    if (!currentPuzzle) return;
+
+    setSolved(true);
+    setMessage("Correct! Well done!");
+    setPuzzlesSolved((prev) => prev + 1);
+
+    // Award XP based on hints used
+    const xpReward = hintsUsed === 0 ? 15 : hintsUsed === 1 ? 10 : 5;
+    setXpEarned(xpReward);
+    addXp(xpReward);
+    completePuzzle(currentPuzzle.id);
+
+    // Update player's puzzle rating using ELO calculation
+    const playerRating = progress?.puzzleRating ?? 600;
+    const newRating = puzzleService.calculateNewRating(
+      playerRating,
+      currentPuzzle.rating,
+      true
+    );
+    updatePuzzleRating(newRating);
+
+    // Show success modal after a brief delay to let the move animate
+    setTimeout(() => setShowSuccessModal(true), 300);
+  }, [currentPuzzle, hintsUsed, addXp, completePuzzle, progress?.puzzleRating, puzzleService, updatePuzzleRating]);
 
   const handleSquarePress = useCallback(
     (square: Square) => {
@@ -132,10 +189,14 @@ export default function PuzzlesScreen() {
   const handleHint = () => {
     if (!currentPuzzle) return;
 
+    // Get the current expected move for the hint
+    const currentExpectedMove = currentPuzzle.moves[moveIndex];
+    const targetSquare = currentExpectedMove?.slice(2, 4) ?? "??";
+
     const hints = [
       "Look at all the pieces your opponent has undefended...",
       "Consider moves that create multiple threats at once...",
-      `The solution starts with moving to ${currentPuzzle.moves[0]?.slice(2, 4)}`,
+      `Try moving to ${targetSquare}`,
     ];
 
     const hintText = hints[Math.min(hintsUsed, hints.length - 1)];
@@ -151,6 +212,7 @@ export default function PuzzlesScreen() {
     setLastMove(null);
     setSolved(false);
     setFailed(false);
+    setMoveIndex(0);
 
     const turnText = engine.turn() === "w" ? "White" : "Black";
     setMessage(`${turnText} to move - Find the best move!`);

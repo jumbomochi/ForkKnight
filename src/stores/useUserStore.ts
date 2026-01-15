@@ -117,15 +117,28 @@ export const useUserStore = create<UserState>((set, get) => ({
 
     const now = new Date();
     const lastActive = new Date(state.progress.lastActiveAt);
-    const diffDays = Math.floor(
-      (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24)
+
+    // Use calendar day comparison instead of time-based
+    // This ensures streak increments correctly even if < 24 hours apart
+    const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const lastDate = new Date(
+      lastActive.getFullYear(),
+      lastActive.getMonth(),
+      lastActive.getDate()
+    );
+    const diffDays = Math.round(
+      (nowDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
     );
 
     let newStreak = state.progress.currentStreak;
 
-    if (diffDays === 1) {
+    if (diffDays === 0) {
+      // Same calendar day - no change to streak
+    } else if (diffDays === 1) {
+      // Consecutive calendar day - increment streak
       newStreak += 1;
-    } else if (diffDays > 1) {
+    } else {
+      // Missed a day - reset streak to 1
       newStreak = 1;
     }
 

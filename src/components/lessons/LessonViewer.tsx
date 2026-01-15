@@ -29,8 +29,8 @@ function StatusBanner({ type, quizAnswered }: { type: LessonStep["type"]; quizAn
       return {
         text: "Your Turn - Make a Move!",
         icon: "♟",
-        backgroundColor: "#4CAF50",
-        textColor: "#FFFFFF",
+        backgroundColor: colors.exerciseGreen,
+        textColor: colors.textInverse,
       };
     }
     if (type === "quiz") {
@@ -91,13 +91,13 @@ function PaginationDots({
   const getStepColor = (step: LessonStep) => {
     switch (step.type) {
       case "exercise":
-        return "#4CAF50"; // Green for exercises
+        return colors.exerciseGreen;
       case "quiz":
-        return colors.primary; // Primary for quizzes
+        return colors.primary;
       case "demonstration":
-        return colors.secondary; // Secondary for demos
+        return colors.secondary;
       default:
-        return colors.border; // Default for explanations
+        return colors.border;
     }
   };
 
@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.exerciseGreen,
     marginTop: 2,
   },
   content: {

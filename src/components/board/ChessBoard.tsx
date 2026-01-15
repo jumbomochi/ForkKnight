@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.highlight,
   },
   highlightedSquare: {
-    backgroundColor: "rgba(0, 255, 0, 0.3)",
+    backgroundColor: colors.moveHighlight,
   },
   lastMoveSquare: {
     backgroundColor: colors.lastMove,
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    backgroundColor: colors.moveIndicator,
     position: "absolute",
   },
   pieceContainer: {
