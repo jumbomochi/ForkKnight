@@ -15,6 +15,9 @@ interface UserState {
   completePuzzle: (puzzleId: string) => void;
   updateStreak: () => void;
   updatePuzzleRating: (newRating: number) => void;
+  updateComputerRating: (newRating: number) => void;
+  recordGameResult: (won: boolean, draw: boolean) => void;
+  getNextPlayerColor: () => "w" | "b";
 }
 
 const XP_PER_LEVEL = 100;
@@ -109,6 +112,43 @@ export const useUserStore = create<UserState>((set, get) => ({
 
     set({ progress: newProgress });
     saveProgress(newProgress);
+  },
+
+  updateComputerRating: (newRating) => {
+    const state = get();
+    if (!state.progress) return;
+
+    // Floor at 200 to prevent discouragement
+    const clampedRating = Math.max(200, newRating);
+
+    const newProgress = {
+      ...state.progress,
+      computerRating: clampedRating,
+    };
+
+    set({ progress: newProgress });
+    saveProgress(newProgress);
+  },
+
+  recordGameResult: (won, draw) => {
+    const state = get();
+    if (!state.progress) return;
+
+    const newProgress = {
+      ...state.progress,
+      gamesPlayed: state.progress.gamesPlayed + 1,
+      gamesWon: won ? state.progress.gamesWon + 1 : state.progress.gamesWon,
+      lastPlayedColor: state.progress.lastPlayedColor === "w" ? "b" : "w",
+    };
+
+    set({ progress: newProgress });
+    saveProgress(newProgress);
+  },
+
+  getNextPlayerColor: () => {
+    const state = get();
+    // Alternate: if last was black, next is white
+    return state.progress?.lastPlayedColor === "b" ? "w" : "b";
   },
 
   updateStreak: () => {
