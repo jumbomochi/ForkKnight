@@ -238,6 +238,50 @@ export const puzzles: Puzzle[] = [
     rating: 650,
     themes: ["fork", "defense", "materialGain"],
   },
+
+  // Polgar 5334 - Mate in 1 (Section 1.1)
+  {
+    id: "polgar-001",
+    fen: "3q1rk1/5pbp/5Qp1/8/8/2B5/5PPP/6K1 w - - 0 1",
+    moves: ["f6f7"],
+    rating: 500,
+    themes: ["mate", "mateIn1", "queenMate"],
+  },
+  {
+    id: "polgar-002",
+    fen: "2r2rk1/2q2p1p/6pQ/4P1N1/8/8/PPP5/2KR4 w - - 0 1",
+    moves: ["h6g7"],
+    rating: 520,
+    themes: ["mate", "mateIn1", "queenMate", "smotheredMate"],
+  },
+  {
+    id: "polgar-003",
+    fen: "r2q1rk1/pp1p1p1p/5PpQ/8/4N3/8/PP3PPP/R5K1 w - - 0 1",
+    moves: ["h6g7"],
+    rating: 540,
+    themes: ["mate", "mateIn1", "queenMate"],
+  },
+  {
+    id: "polgar-004",
+    fen: "6r1/7k/2p1pPp1/3p4/8/1R6/5PPP/5K2 w - - 0 1",
+    moves: ["b3h3"],
+    rating: 560,
+    themes: ["mate", "mateIn1", "rookMate", "backRankMate"],
+  },
+  {
+    id: "polgar-005",
+    fen: "1r4k1/1q3p2/5Bp1/8/8/8/PP6/1K5R w - - 0 1",
+    moves: ["h1h8"],
+    rating: 580,
+    themes: ["mate", "mateIn1", "rookMate", "backRankMate"],
+  },
+  {
+    id: "polgar-006",
+    fen: "r4rk1/5p1p/8/8/8/8/1BP5/2KR4 w - - 0 1",
+    moves: ["d1d8"],
+    rating: 600,
+    themes: ["mate", "mateIn1", "rookMate", "backRankMate"],
+  },
 ];
 
 export default puzzles;
