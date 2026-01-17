@@ -134,11 +134,13 @@ export const useUserStore = create<UserState>((set, get) => ({
     const state = get();
     if (!state.progress) return;
 
+    const nextColor: "w" | "b" = state.progress.lastPlayedColor === "w" ? "b" : "w";
+
     const newProgress = {
       ...state.progress,
       gamesPlayed: state.progress.gamesPlayed + 1,
       gamesWon: won ? state.progress.gamesWon + 1 : state.progress.gamesWon,
-      lastPlayedColor: state.progress.lastPlayedColor === "w" ? "b" : "w",
+      lastPlayedColor: nextColor,
     };
 
     set({ progress: newProgress });
