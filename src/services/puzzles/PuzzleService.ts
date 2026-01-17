@@ -1,91 +1,57 @@
-import { puzzles } from "@/data/puzzles/puzzles";
+import { getDatabaseService, DatabaseService } from "@/services/database";
 import type { Puzzle } from "@/types";
 
 export class PuzzleService {
-  private puzzles: Puzzle[];
+  private db: DatabaseService;
 
   constructor() {
-    this.puzzles = puzzles;
+    this.db = getDatabaseService();
   }
 
-  getAllPuzzles(): Puzzle[] {
-    return this.puzzles;
+  async getPuzzleById(id: string): Promise<Puzzle | null> {
+    return this.db.getPuzzleById(id);
   }
 
-  getPuzzleById(id: string): Puzzle | undefined {
-    return this.puzzles.find((p) => p.id === id);
+  async getPuzzlesByRating(minRating: number, maxRating: number): Promise<Puzzle[]> {
+    return this.db.getPuzzlesByRating(minRating, maxRating);
   }
 
-  getPuzzlesByRating(minRating: number, maxRating: number): Puzzle[] {
-    return this.puzzles.filter(
-      (p) => p.rating >= minRating && p.rating <= maxRating
-    );
-  }
-
-  getPuzzlesByTheme(theme: string): Puzzle[] {
-    return this.puzzles.filter((p) => p.themes.includes(theme));
-  }
-
-  getRandomPuzzle(maxRating?: number): Puzzle | undefined {
-    let available = this.puzzles;
-
-    if (maxRating) {
-      available = available.filter((p) => p.rating <= maxRating);
-    }
-
-    if (available.length === 0) return undefined;
-
-    const randomIndex = Math.floor(Math.random() * available.length);
-    return available[randomIndex];
-  }
-
-  getNextPuzzle(currentRating: number, completedPuzzleIds: string[] = []): Puzzle | undefined {
+  async getNextPuzzle(
+    currentRating: number,
+    completedPuzzleIds: string[] = []
+  ): Promise<Puzzle | null> {
     // Find puzzles within ±100 rating of the player
     const targetMin = Math.max(400, currentRating - 100);
     const targetMax = currentRating + 100;
-    const completedSet = new Set(completedPuzzleIds);
 
-    const suitable = this.puzzles.filter(
-      (p) =>
-        p.rating >= targetMin &&
-        p.rating <= targetMax &&
-        !completedSet.has(p.id)
-    );
+    // Try to get puzzle in rating range
+    let puzzle = await this.db.getRandomPuzzle(targetMin, targetMax, completedPuzzleIds);
 
-    if (suitable.length === 0) {
-      // If no uncompleted puzzles in range, get any uncompleted puzzle
-      const uncompleted = this.puzzles.filter(
-        (p) => !completedSet.has(p.id)
-      );
-      if (uncompleted.length === 0) return this.getRandomPuzzle();
-      return uncompleted[Math.floor(Math.random() * uncompleted.length)];
+    if (!puzzle) {
+      // Fallback: get any uncompleted puzzle
+      puzzle = await this.db.getRandomPuzzle(0, 9999, completedPuzzleIds);
     }
 
-    return suitable[Math.floor(Math.random() * suitable.length)];
+    if (!puzzle) {
+      // All completed: get any random puzzle
+      puzzle = await this.db.getRandomPuzzle(0, 9999, []);
+    }
+
+    return puzzle;
   }
 
-  getDailyPuzzle(): Puzzle {
+  async getDailyPuzzle(): Promise<Puzzle | null> {
     // Use the current date to deterministically select a puzzle
-    // Use ISO date string to avoid getMonth() returning 0-11 causing collisions
     const today = new Date();
-    const dateString = today.toISOString().split("T")[0]; // "YYYY-MM-DD" format
-    const hash = this.simpleHash(dateString!);
-    const index = hash % this.puzzles.length;
-    return this.puzzles[index] as Puzzle;
+    const dateString = today.toISOString().split("T")[0]!;
+    const hash = this.simpleHash(dateString);
+    const totalCount = await this.db.getTotalCount();
+    const index = hash % totalCount;
+    return this.db.getPuzzleByIndex(index);
   }
 
-  getCompletedCount(completedPuzzleIds: string[] = []): number {
-    return completedPuzzleIds.length;
-  }
-
-  getTotalCount(): number {
-    return this.puzzles.length;
-  }
-
-  getPuzzleThemes(): string[] {
-    const themes = new Set<string>();
-    this.puzzles.forEach((p) => p.themes.forEach((t) => themes.add(t)));
-    return Array.from(themes).sort();
+  async getTotalCount(): Promise<number> {
+    return this.db.getTotalCount();
   }
 
   private simpleHash(str: string): number {
@@ -98,20 +64,20 @@ export class PuzzleService {
     return Math.abs(hash);
   }
 
-  // Calculate new rating based on puzzle attempt
+  // Calculate new rating based on puzzle attempt (pure function - unchanged)
   calculateNewRating(
     playerRating: number,
     puzzleRating: number,
     solved: boolean
   ): number {
-    const K = 32; // Rating change factor
+    const K = 32;
     const expectedScore =
       1 / (1 + Math.pow(10, (puzzleRating - playerRating) / 400));
     const actualScore = solved ? 1 : 0;
     const newRating = Math.round(
       playerRating + K * (actualScore - expectedScore)
     );
-    return Math.max(100, newRating); // Minimum rating of 100
+    return Math.max(100, newRating);
   }
 }
 
