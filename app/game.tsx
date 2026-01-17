@@ -41,37 +41,6 @@ export default function GameScreen() {
     return engine?.turn() === playerColor;
   }, [engine, playerColor]);
 
-  const makeComputerMove = useCallback(
-    async (eng: ChessEngine, sf: StockfishService) => {
-      if (!eng || !sf) return;
-
-      const rating = progress?.computerRating ?? 400;
-      const move = await sf.getBestMove(eng.getFen(), rating);
-
-      if (move && move.length >= 4) {
-        const from = move.slice(0, 2) as Square;
-        const to = move.slice(2, 4) as Square;
-        const promotion = move.length > 4 ? (move[4] as PieceSymbol) : undefined;
-
-        const result = eng.makeMove({ from, to, promotion });
-        if (result) {
-          setPositions(eng.getBoard());
-          setLastMove({ from, to });
-        }
-      }
-
-      setIsComputerThinking(false);
-
-      // Check for game over after computer move
-      if (eng.isGameOver()) {
-        handleGameOver(eng);
-      } else {
-        setMessage("Your turn");
-      }
-    },
-    [progress?.computerRating]
-  );
-
   const handleGameOver = useCallback(
     (eng: ChessEngine) => {
       setGameOver(true);
@@ -120,6 +89,37 @@ export default function GameScreen() {
       setTimeout(() => setShowResultModal(true), 300);
     },
     [playerColor, hintsUsed, progress?.computerRating, stockfish, addXp, updateComputerRating, recordGameResult, updateStreak]
+  );
+
+  const makeComputerMove = useCallback(
+    async (eng: ChessEngine, sf: StockfishService) => {
+      if (!eng || !sf) return;
+
+      const rating = progress?.computerRating ?? 400;
+      const move = await sf.getBestMove(eng.getFen(), rating);
+
+      if (move && move.length >= 4) {
+        const from = move.slice(0, 2) as Square;
+        const to = move.slice(2, 4) as Square;
+        const promotion = move.length > 4 ? (move[4] as PieceSymbol) : undefined;
+
+        const result = eng.makeMove({ from, to, promotion });
+        if (result) {
+          setPositions(eng.getBoard());
+          setLastMove({ from, to });
+        }
+      }
+
+      setIsComputerThinking(false);
+
+      // Check for game over after computer move
+      if (eng.isGameOver()) {
+        handleGameOver(eng);
+      } else {
+        setMessage("Your turn");
+      }
+    },
+    [progress?.computerRating, handleGameOver]
   );
 
   // Initialize game

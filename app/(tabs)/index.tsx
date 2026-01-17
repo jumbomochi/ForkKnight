@@ -30,6 +30,7 @@ export default function HomeScreen() {
 
   const lessonsCompleted = progress?.completedLessons.length ?? 0;
   const puzzlesSolved = progress?.completedPuzzles.length ?? 0;
+  const gamesWon = progress?.gamesWon ?? 0;
   const currentStreak = progress?.currentStreak ?? 0;
   const level = progress?.level ?? 1;
   const xp = progress?.xp ?? 0;
@@ -72,6 +73,14 @@ export default function HomeScreen() {
           />
           <View style={styles.spacer} />
           <Button
+            title="Play vs Computer"
+            onPress={() => router.push("/game")}
+            variant="outline"
+            size="large"
+            fullWidth
+          />
+          <View style={styles.spacer} />
+          <Button
             title="Daily Puzzle"
             onPress={() => router.push("/puzzles")}
             variant="secondary"
@@ -88,6 +97,10 @@ export default function HomeScreen() {
           <View style={styles.statCard}>
             <Text style={styles.statNumber}>{puzzlesSolved}</Text>
             <Text style={styles.statLabel}>Puzzles</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>{gamesWon}</Text>
+            <Text style={styles.statLabel}>Games Won</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statNumber}>{currentStreak}</Text>
@@ -188,10 +201,10 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     backgroundColor: colors.surface,
-    padding: spacing.md,
+    padding: spacing.sm,
     borderRadius: 12,
     alignItems: "center",
-    marginHorizontal: spacing.xs,
+    marginHorizontal: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
