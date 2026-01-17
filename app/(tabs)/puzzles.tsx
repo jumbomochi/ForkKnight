@@ -28,6 +28,7 @@ export default function PuzzlesScreen() {
   const [moveIndex, setMoveIndex] = useState(0);
   const [solutionRevealed, setSolutionRevealed] = useState(false);
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
+  const [totalPuzzleCount, setTotalPuzzleCount] = useState(0);
 
   const loadPuzzle = useCallback((puzzle: Puzzle, existingEngine: ChessEngine | null) => {
     let activeEngine: ChessEngine;
@@ -62,9 +63,18 @@ export default function PuzzlesScreen() {
 
   useEffect(() => {
     // Load daily puzzle on mount
-    const dailyPuzzle = puzzleService.getDailyPuzzle();
-    loadPuzzle(dailyPuzzle, null);
+    const loadDaily = async () => {
+      const dailyPuzzle = await puzzleService.getDailyPuzzle();
+      if (dailyPuzzle) {
+        loadPuzzle(dailyPuzzle, null);
+      }
+    };
+    loadDaily();
   }, [loadPuzzle, puzzleService]);
+
+  useEffect(() => {
+    puzzleService.getTotalCount().then(setTotalPuzzleCount);
+  }, [puzzleService]);
 
   const tryMove = useCallback(
     (from: Square, to: Square) => {
@@ -250,14 +260,14 @@ export default function PuzzlesScreen() {
     setMessage(`${turnText} to move - Find the best move!`);
   };
 
-  const handleNextPuzzle = () => {
+  const handleNextPuzzle = useCallback(async () => {
     const playerRating = progress?.puzzleRating ?? 600;
     const completedPuzzles = progress?.completedPuzzles ?? [];
-    const nextPuzzle = puzzleService.getNextPuzzle(playerRating, completedPuzzles);
+    const nextPuzzle = await puzzleService.getNextPuzzle(playerRating, completedPuzzles);
     if (nextPuzzle) {
       loadPuzzle(nextPuzzle, engine);
     }
-  };
+  }, [progress?.puzzleRating, progress?.completedPuzzles, puzzleService, loadPuzzle, engine]);
 
   const handleSkip = () => {
     handleNextPuzzle();
@@ -285,7 +295,7 @@ export default function PuzzlesScreen() {
             <Text style={styles.title}>Puzzle Training</Text>
             <Text style={styles.subtitle}>
               Solved today: {puzzlesSolved} | Total:{" "}
-              {progress?.completedPuzzles?.length ?? 0}/{puzzleService.getTotalCount()}
+              {progress?.completedPuzzles?.length ?? 0}/{totalPuzzleCount}
             </Text>
           </View>
           <View style={styles.ratingBadge}>
