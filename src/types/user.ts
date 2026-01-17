@@ -10,6 +10,10 @@ export interface UserProgress {
   xp: number;
   level: number;
   puzzleRating: number;
+  computerRating: number;
+  gamesPlayed: number;
+  gamesWon: number;
+  lastPlayedColor: "w" | "b";
   completedLessons: string[];
   completedPuzzles: string[];
   achievements: Achievement[];
