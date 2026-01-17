@@ -27,6 +27,7 @@ export default function PuzzlesScreen() {
   const [xpEarned, setXpEarned] = useState(0);
   const [moveIndex, setMoveIndex] = useState(0);
   const [solutionRevealed, setSolutionRevealed] = useState(false);
+  const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
 
   const loadPuzzle = useCallback((puzzle: Puzzle, existingEngine: ChessEngine | null) => {
     let activeEngine: ChessEngine;
@@ -51,7 +52,11 @@ export default function PuzzlesScreen() {
     setMoveIndex(0);
     setSolutionRevealed(false);
 
-    const turnText = activeEngine.turn() === "w" ? "White" : "Black";
+    // Track player's color at puzzle start (for consistent board orientation)
+    const startingColor = activeEngine.turn();
+    setPlayerColor(startingColor);
+
+    const turnText = startingColor === "w" ? "White" : "Black";
     setMessage(`${turnText} to move - Find the best move!`);
   }, []);
 
@@ -297,7 +302,7 @@ export default function PuzzlesScreen() {
             onSquarePress={handleSquarePress}
             onPieceDrop={handlePieceDrop}
             interactive={!solved && !failed}
-            flipped={engine.turn() === "b"}
+            flipped={playerColor === "b"}
           />
         </View>
 
