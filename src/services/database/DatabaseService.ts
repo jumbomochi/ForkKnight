@@ -47,7 +47,8 @@ export class DatabaseService {
     if (!this.db) throw new Error("Database not initialized");
 
     // Load JSON from assets
-    const asset = Asset.fromModule(require("@/../assets/puzzles.json"));
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const asset = Asset.fromModule(require("../../../assets/puzzles.json"));
     await asset.downloadAsync();
 
     if (!asset.localUri) {
@@ -70,22 +71,15 @@ export class DatabaseService {
   private async insertPuzzles(puzzles: Puzzle[]): Promise<void> {
     if (!this.db) throw new Error("Database not initialized");
 
-    const statement = await this.db.prepareAsync(
-      "INSERT OR IGNORE INTO puzzles (id, fen, moves, rating, themes) VALUES (?, ?, ?, ?, ?)"
-    );
-
-    try {
-      for (const puzzle of puzzles) {
-        await statement.executeAsync([
-          puzzle.id,
-          puzzle.fen,
-          JSON.stringify(puzzle.moves),
-          puzzle.rating,
-          JSON.stringify(puzzle.themes),
-        ]);
-      }
-    } finally {
-      await statement.finalizeAsync();
+    for (const puzzle of puzzles) {
+      await this.db.runAsync(
+        "INSERT OR IGNORE INTO puzzles (id, fen, moves, rating, themes) VALUES (?, ?, ?, ?, ?)",
+        puzzle.id,
+        puzzle.fen,
+        JSON.stringify(puzzle.moves),
+        puzzle.rating,
+        JSON.stringify(puzzle.themes)
+      );
     }
   }
 
