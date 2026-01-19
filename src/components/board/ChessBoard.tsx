@@ -67,6 +67,7 @@ const DraggablePiece = memo(function DraggablePiece({
   const isDragging = useSharedValue(false);
 
   const getSquareFromPosition = (x: number, y: number): Square => {
+    'worklet';
     const fileIndex = Math.floor(x / squareSize);
     const rankIndex = Math.floor(y / squareSize);
     const clampedFileIndex = Math.max(0, Math.min(7, fileIndex));
