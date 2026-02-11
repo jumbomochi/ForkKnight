@@ -273,8 +273,11 @@ export function LessonViewer({ lesson, onComplete, onExit }: LessonViewerProps) 
 
   const canProceed = (): boolean => {
     if (!currentStep) return false;
-    if (currentStep.type === "exercise" || currentStep.type === "quiz") {
+    if (currentStep.type === "exercise") {
       return quizAnswered && feedbackType === "success";
+    }
+    if (currentStep.type === "quiz") {
+      return quizAnswered;
     }
     return true;
   };
