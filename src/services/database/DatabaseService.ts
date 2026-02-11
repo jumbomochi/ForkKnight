@@ -1,6 +1,4 @@
 import * as SQLite from "expo-sqlite";
-import { Asset } from "expo-asset";
-import * as FileSystem from "expo-file-system";
 import type { Puzzle } from "@/types";
 
 export class DatabaseService {
@@ -46,17 +44,8 @@ export class DatabaseService {
   private async seedPuzzles(): Promise<void> {
     if (!this.db) throw new Error("Database not initialized");
 
-    // Load JSON from assets
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const asset = Asset.fromModule(require("../../../assets/puzzles.json"));
-    await asset.downloadAsync();
-
-    if (!asset.localUri) {
-      throw new Error("Failed to load puzzles.json");
-    }
-
-    const jsonString = await FileSystem.readAsStringAsync(asset.localUri);
-    const puzzles: Puzzle[] = JSON.parse(jsonString);
+    const puzzles: Puzzle[] = require("../../../assets/puzzles.json");
 
     // Batch insert in chunks of 500
     const chunkSize = 500;
