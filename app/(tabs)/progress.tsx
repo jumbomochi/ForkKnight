@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserStore } from "@/stores/useUserStore";
 import { colors, spacing, fontSize, fontWeight, borderRadius } from "@/utils/theme";
@@ -41,6 +42,7 @@ function Achievement({ name, description, icon, unlocked }: AchievementProps) {
 }
 
 export default function ProgressScreen() {
+  const router = useRouter();
   const progress = useUserStore((state) => state.progress);
 
   const level = progress?.level ?? 1;
@@ -158,6 +160,15 @@ export default function ProgressScreen() {
             </View>
           </View>
         </View>
+
+        <TouchableOpacity
+          style={styles.privacyLink}
+          onPress={() => router.push("/privacy-policy")}
+          accessibilityRole="link"
+          accessibilityLabel="Privacy Policy"
+        >
+          <Text style={styles.privacyLinkText}>Privacy Policy</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -305,5 +316,15 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
     color: colors.text,
+  },
+  privacyLink: {
+    alignItems: "center",
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  privacyLinkText: {
+    fontSize: fontSize.sm,
+    color: colors.primary,
+    textDecorationLine: "underline",
   },
 });

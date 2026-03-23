@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   USER_PROGRESS: "@forkknight/user_progress",
   COMPLETED_PUZZLES: "@forkknight/completed_puzzles",
   SETTINGS: "@forkknight/settings",
+  ONBOARDING_COMPLETE: "@forkknight/onboarding_complete",
 } as const;
 
 export interface AppSettings {
@@ -119,12 +120,30 @@ export class StorageService {
     }
   }
 
+  async getOnboardingComplete(): Promise<boolean> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETE);
+      return data === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  async setOnboardingComplete(): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETE, "true");
+    } catch (error) {
+      console.error("Error saving onboarding state:", error);
+    }
+  }
+
   async clearAllData(): Promise<void> {
     try {
       await AsyncStorage.multiRemove([
         STORAGE_KEYS.USER_PROGRESS,
         STORAGE_KEYS.COMPLETED_PUZZLES,
         STORAGE_KEYS.SETTINGS,
+        STORAGE_KEYS.ONBOARDING_COMPLETE,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);

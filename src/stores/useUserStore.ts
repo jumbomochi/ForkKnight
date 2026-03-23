@@ -7,7 +7,9 @@ interface UserState {
   progress: UserProgress | null;
   isLoading: boolean;
   isInitialized: boolean;
+  hasCompletedOnboarding: boolean;
   initialize: () => Promise<void>;
+  completeOnboarding: () => Promise<void>;
   setUser: (user: User | null) => void;
   setProgress: (progress: UserProgress | null) => void;
   addXp: (amount: number) => void;
@@ -34,6 +36,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   progress: null,
   isLoading: false,
   isInitialized: false,
+  hasCompletedOnboarding: false,
 
   initialize: async () => {
     if (get().isInitialized) return;
@@ -41,12 +44,26 @@ export const useUserStore = create<UserState>((set, get) => ({
     set({ isLoading: true });
     try {
       const storage = getStorageService();
-      const progress = await storage.getUserProgress();
-      set({ progress, isInitialized: true, isLoading: false });
+      const [progress, onboardingComplete] = await Promise.all([
+        storage.getUserProgress(),
+        storage.getOnboardingComplete(),
+      ]);
+      set({
+        progress,
+        hasCompletedOnboarding: onboardingComplete,
+        isInitialized: true,
+        isLoading: false,
+      });
     } catch (error) {
       console.error("Failed to initialize user store:", error);
       set({ isLoading: false });
     }
+  },
+
+  completeOnboarding: async () => {
+    const storage = getStorageService();
+    await storage.setOnboardingComplete();
+    set({ hasCompletedOnboarding: true });
   },
 
   setUser: (user) => set({ user }),
