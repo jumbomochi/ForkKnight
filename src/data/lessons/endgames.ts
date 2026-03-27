@@ -30,7 +30,7 @@ export const endgameLessons: Lesson[] = [
         title: "Watch Out for Stalemate!",
         content:
           "Stalemate happens when the opponent's King has NO legal moves but is NOT in check — and that means a draw! Be careful not to give the enemy King no moves unless it is already in checkmate. Always check if the King has somewhere to go before moving your Queen close.",
-        fen: "Q7/8/2k5/8/8/8/8/7K b - - 0 1",
+        fen: "k7/8/K1Q5/8/8/8/8/8 b - - 0 1",
       },
       {
         id: "kqk-demo",
@@ -39,7 +39,7 @@ export const endgameLessons: Lesson[] = [
         content:
           "Watch how the Queen and King work together to force checkmate! The King comes forward to help box in the enemy King, and then the Queen delivers the final blow.",
         fen: "8/8/8/8/8/2k5/8/KQ6 w - - 0 1",
-        moves: ["b1b6", "c3d4", "b6b4", "d4c3", "a1a2", "c3d3", "b4d4"],
+        moves: ["b1b3", "c3c4", "a1a2", "c4d4", "b3b4", "d4d5", "a2b3"],
       },
       {
         id: "kqk-exercise",
@@ -48,10 +48,10 @@ export const endgameLessons: Lesson[] = [
         content:
           "The enemy King is in the middle. Move your Queen to start pushing it toward the edge of the board. Use the staircase — cut off the King's escape squares!",
         fen: "8/8/8/4k3/8/8/8/KQ6 w - - 0 1",
-        correctAnswer: "b1e4",
+        correctAnswer: "b1b5",
         hints: [
-          "Move the Queen to cut off the enemy King's escape squares",
-          "Put the Queen on e4 to start pushing the King toward the top of the board",
+          "Cut off the King from going down — use the Queen to block a rank",
+          "Place the Queen on the 5th rank to push the King upward",
         ],
       },
       {
@@ -295,12 +295,12 @@ export const endgameLessons: Lesson[] = [
         type: "exercise",
         title: "Advance the Passed Pawn!",
         content:
-          "You have a passed pawn on c2. The enemy King is far away. Push your pawn forward to begin its march to promotion!",
+          "You have a passed pawn on c2, but your King is blocking its path! Step your King aside so the pawn can advance.",
         fen: "8/8/8/8/8/2k5/2P5/2K5 w - - 0 1",
         correctAnswer: "c1b1",
         hints: [
-          "First, use your King to help escort the pawn",
-          "Move your King away from the pawn's path so the pawn can advance freely",
+          "Your King is in front of the pawn — it needs to move out of the way",
+          "Step the King to the side so the pawn has a clear path forward",
         ],
       },
       {

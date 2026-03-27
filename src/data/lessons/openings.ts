@@ -392,7 +392,7 @@ export const openingsLessons: Lesson[] = [
         content:
           "Watch the Fried Liver Attack! After 4.Ng5 d5 5.exd5 Nxd5, White plays 6.Nxf7!! The Knight captures on f7, forking the King and Queen! Black's King is forced to move, and White wins the Queen. Black gets the Knight, but White has a raging attack!",
         fen: "r1bqkb1r/pppp1ppp/2n2n2/4p1N1/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 5 4",
-        moves: ["d7d5", "e4d5", "c6d5", "g5f7"],
+        moves: ["d7d5", "e4d5", "f6d5", "g5f7"],
       },
       {
         id: "kg-exercise",

@@ -296,7 +296,7 @@ export const strategyLessons: Lesson[] = [
         title: "Rook Takes the Open File",
         content:
           "After pawns are exchanged, the e-file becomes open. Watch the Rook slide onto e1 to dominate the open file and pressure the enemy!",
-        fen: "r1bqkb1r/ppp2ppp/2n2n2/8/3pP3/2N2N2/PPP2PPP/R1BQK2R w KQkq - 0 6",
+        fen: "r1bqkb1r/ppp2ppp/2n2n2/8/3pP3/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 6",
         moves: ["e4d5", "f6d5", "f1e1"],
       },
       {
@@ -321,7 +321,7 @@ export const strategyLessons: Lesson[] = [
         title: "Claim the Open File!",
         content:
           "The e-file is wide open with no pawns blocking it. Move your Rook to e1 to take control of the open file and threaten to invade the enemy position!",
-        fen: "r1bqkb1r/ppp2ppp/2n2n2/8/3p4/2N2N2/PPP2PPP/R1BQK2R w KQkq - 0 6",
+        fen: "r1bqkb1r/ppp2ppp/2n2n2/8/3p4/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 6",
         correctAnswer: "f1e1",
         hints: [
           "Look for a file with no pawns on it",
@@ -387,17 +387,17 @@ export const strategyLessons: Lesson[] = [
         title: "Knight on an Outpost",
         content:
           "Watch the Knight hop to d6 — a powerful outpost in the heart of Black's position. The Knight on d6 attacks c8, e8, f7, and f5, and Black has no pawns to chase it away!",
-        fen: "r1bqkb1r/ppp2ppp/5n2/3pP3/3N4/2N5/PPP2PPP/R1BQK2R w KQkq - 2 7",
-        moves: ["d4d6"],
+        fen: "r1bqkb1r/ppp2ppp/5n2/3pP3/4N3/2N5/PPP2PPP/R1BQK2R w KQkq - 2 7",
+        moves: ["e4d6"],
       },
       {
         id: "outposts-exercise",
         type: "exercise",
         title: "Find the Outpost!",
         content:
-          "Your Knight is on f5 and has a chance to jump to a perfect outpost on d6 — deep in Black's position where no pawns can chase it away. Make that knight leap!",
-        fen: "r1bqkb1r/ppp3pp/3p1n2/3Np3/8/2N5/PPP2PPP/R1BQK2R w KQkq - 0 8",
-        correctAnswer: "f6d5",
+          "Your Knight is on e4 and has a chance to jump to a perfect outpost on d6 — deep in Black's position where no pawns can chase it away. Make that Knight leap!",
+        fen: "r1bqkb1r/ppp3pp/3p1n2/4p3/4N3/2N5/PPP2PPP/R1BQK2R w KQkq - 0 8",
+        correctAnswer: "e4d6",
         hints: [
           "Look for a square in the opponent's half that their pawns cannot attack",
           "Knights are strongest when placed on outpost squares in the center",
@@ -462,8 +462,8 @@ export const strategyLessons: Lesson[] = [
         type: "exercise",
         title: "Improve Your Bishop!",
         content:
-          "Your dark-squared Bishop is currently blocked. Move it to c4 where it has a beautiful open diagonal pointing toward the enemy King!",
-        fen: "r1bqk2r/pppp1ppp/2n2n2/4p3/4P3/3P1N2/PPP1BPPP/RNBQK2R w KQkq - 2 5",
+          "Your light-squared Bishop is currently blocked on e2. Move it to c4 where it has a beautiful open diagonal pointing toward Black's weak f7 pawn!",
+        fen: "r1bqk2r/pppp1ppp/2n2n2/4p3/3PP3/5N2/PPP1BPPP/RNBQK2R w KQkq - 2 5",
         correctAnswer: "e2c4",
         hints: [
           "The Bishop on e2 is blocked — find a better diagonal for it",
@@ -524,9 +524,9 @@ export const strategyLessons: Lesson[] = [
         type: "demonstration",
         title: "Trade into a Winning Endgame",
         content:
-          "White is up material. By trading Queens, White simplifies into a winning King and pawn endgame where the extra material will decide the game. Watch the smart trade!",
-        fen: "4k3/8/8/3q4/3Q4/8/8/4K3 w - - 0 1",
-        moves: ["d4d5", "d5d5", "e1d2"],
+          "White has an extra pawn. By trading Queens, White simplifies into a winning King and pawn endgame where the extra pawn will decide the game. Watch the smart trade!",
+        fen: "4k3/4p3/8/3q4/3QP3/8/8/4K3 w - - 0 1",
+        moves: ["d4d5", "e8d7", "e1d2"],
       },
       {
         id: "when-to-trade-bad-bishop-trade",

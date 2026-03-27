@@ -42,12 +42,11 @@ export const famousGamesLessons: Lesson[] = [
       },
       {
         id: "immortal-final",
-        type: "demonstration",
+        type: "explanation",
         title: "The Final Checkmate!",
         content:
-          "Watch the final checkmate! Anderssen played Be7+! (moving his bishop to e7 to give check), then after the king moved, Nd5 was checkmate! The bishop and knight worked together perfectly. Kieseritzky was checkmated even though he had an extra queen and two rooks. Truly immortal!",
-        fen: "r1bk3r/p2pBpNp/n4n2/1p6/2B5/8/PPP3PP/R4bK1 w - - 0 18",
-        moves: ["e7d8"],
+          "In the final position, Anderssen had given up his Queen, both Rooks, and a Bishop — yet his remaining pieces delivered checkmate! The Bishop and Knight worked together perfectly to trap the King. Kieseritzky was checkmated even though he had a huge material advantage. This is why it's called 'The Immortal Game' — piece activity and coordination beat raw material!",
+        fen: "1rb4r/pkPp3p/1b6/1Q6/8/8/PPP2B1P/2KR4 w - - 0 1",
       },
       {
         id: "immortal-quiz",
@@ -105,12 +104,11 @@ export const famousGamesLessons: Lesson[] = [
       },
       {
         id: "opera-finale",
-        type: "demonstration",
+        type: "explanation",
         title: "The Beautiful Finish!",
         content:
-          "The final combination is stunning! Morphy played Rxb8+! sacrificing his rook. After Rxb8, he played Rd8+!! (another sacrifice!). Then Rxd8 Qb8+! Nxb8 Rd8# — CHECKMATE! The queen sacrifice and the rook on d8 delivered the final blow. Three brilliant moves to finish the game. This is the power of piece coordination!",
-        fen: "2kr3r/ppp2ppp/2n5/2b1p3/2B1P3/1QB5/PPP2PPP/3RK2R w K - 6 14",
-        moves: ["b3b8", "c8b8", "d1d8", "b8d8", "b1b8"],
+          "The final combination is stunning! Morphy sacrificed his Queen with Qb8+! The Knight had to capture (Nxb8), and then Rd8# — the Rook delivered checkmate on the back rank! Morphy gave up his most powerful piece to clear the way for a simple Rook checkmate. Three brilliant moves to finish the game. This is the power of piece coordination!",
+        fen: "1n1Rkb1r/p4ppp/4q3/4p1B1/4P3/8/PPP2PPP/2K5 b k - 1 17",
       },
       {
         id: "opera-quiz",
@@ -155,12 +153,11 @@ export const famousGamesLessons: Lesson[] = [
       },
       {
         id: "kasparov-rxd4",
-        type: "demonstration",
+        type: "explanation",
         title: "The Stunning Rook Sacrifice!",
         content:
-          "Kasparov played Rxd4!! — moving his rook to d4 where Topalov could simply capture it! This is a rook sacrifice — offering the rook to win something even more valuable: activity and attack. Topalov took the rook, but Kasparov's remaining pieces crashed through like a tidal wave. Watch this incredible move!",
+          "Kasparov played Rxd4!! — offering his Rook where Topalov could simply capture it! This is a positional sacrifice — giving up material to gain overwhelming piece activity. Topalov took the Rook, but Kasparov's remaining Queen, Bishop, and Rook crashed through like a tidal wave. The sacrifice worked because all of Kasparov's pieces became incredibly active while Topalov's pieces couldn't help defend.",
         fen: "r3r1k1/pp3ppp/1qp1bn2/3p4/3P1B2/2PBR2Q/PP3PPP/4R1K1 w - - 0 24",
-        moves: ["e3d3"],
       },
       {
         id: "kasparov-attack",
@@ -213,12 +210,11 @@ export const famousGamesLessons: Lesson[] = [
       },
       {
         id: "century-queen-sacrifice",
-        type: "demonstration",
+        type: "explanation",
         title: "The Queen Sacrifice!",
         content:
-          "Fischer played ...Nxc3!! — attacking the white queen. After bxc3, Fischer played ...Nxc4!! — again not taking the queen! Byrne took the queen with Bxc4, and now Fischer revealed his plan: his two bishops, rooks, and knight all coordinated in a devastating attack. Fischer had given up his queen but gained a massive attack!",
+          "Fischer played a series of stunning Knight moves, capturing key pieces while leaving his own Queen hanging! Byrne finally captured Fischer's Queen, but it was too late — Fischer's two Bishops, Rook, and Knight were all perfectly coordinated for a devastating attack. Fischer had willingly given up the most powerful piece on the board because he saw that his remaining pieces working together were even stronger!",
         fen: "r4rk1/pp1bppbp/1q4p1/3p4/2nP4/2N1BN2/PP2QPPP/R4RK1 b - - 7 18",
-        moves: ["c6c3", "b2c3", "c4e3", "f2e3"],
       },
       {
         id: "century-coordination",

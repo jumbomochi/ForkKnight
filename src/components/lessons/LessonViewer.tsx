@@ -155,7 +155,43 @@ export function LessonViewer({ lesson, onComplete, onExit }: LessonViewerProps) 
     setSelectedQuizAnswer(null);
     setQuizAnswered(completedSteps.has(currentStepIndex));
     setHintIndex(0);
-  }, [currentStepIndex, currentStep?.fen, engine, completedSteps]);
+  }, [currentStepIndex, engine]);
+
+  // Play demonstration moves sequentially with animation delay
+  useEffect(() => {
+    if (currentStep?.type !== "demonstration" || !currentStep.moves?.length) return;
+    if (!currentStep.fen) return;
+
+    engine.loadFen(currentStep.fen);
+    setPositions(engine.getBoard());
+    setLastMove(null);
+
+    const moves = currentStep.moves;
+    let moveIndex = 0;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    const playNextMove = () => {
+      if (moveIndex >= moves.length) return;
+      const uci = moves[moveIndex]!;
+      const from = uci.slice(0, 2) as Square;
+      const to = uci.slice(2, 4) as Square;
+      const move = engine.makeMove({ from, to });
+      if (move) {
+        setPositions(engine.getBoard());
+        setLastMove({ from, to });
+      }
+      moveIndex++;
+      if (moveIndex < moves.length) {
+        timers.push(setTimeout(playNextMove, 1200));
+      }
+    };
+
+    timers.push(setTimeout(playNextMove, 800));
+
+    return () => {
+      timers.forEach(clearTimeout);
+    };
+  }, [currentStepIndex, currentStep?.type, engine]);
 
   const tryMove = useCallback(
     (from: Square, to: Square) => {
