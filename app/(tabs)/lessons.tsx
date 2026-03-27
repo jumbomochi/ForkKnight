@@ -8,7 +8,14 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { allLessons } from "@/data/lessons";
+import {
+  beginnerLessons,
+  tacticsLessons,
+  openingsLessons,
+  strategyLessons,
+  endgameLessons,
+  famousGamesLessons,
+} from "@/data/lessons";
 import { useUserStore } from "@/stores/useUserStore";
 import { colors, spacing, fontSize, fontWeight, borderRadius } from "@/utils/theme";
 import type { Lesson, Difficulty } from "@/types";
@@ -52,12 +59,42 @@ function LessonCard({ lesson, completed, onPress }: LessonCardProps) {
   );
 }
 
+const sections = [
+  {
+    title: "Beginner",
+    subtitle: "Learn how each piece moves",
+    lessons: beginnerLessons,
+  },
+  {
+    title: "Tactics",
+    subtitle: "Winning combinations and tricks",
+    lessons: tacticsLessons,
+  },
+  {
+    title: "Openings",
+    subtitle: "Start your games with confidence",
+    lessons: openingsLessons,
+  },
+  {
+    title: "Strategy",
+    subtitle: "Think like a chess player",
+    lessons: strategyLessons,
+  },
+  {
+    title: "Endgames",
+    subtitle: "Finish the game like a pro",
+    lessons: endgameLessons,
+  },
+  {
+    title: "Famous Games",
+    subtitle: "Learn from the greatest games ever played",
+    lessons: famousGamesLessons,
+  },
+];
+
 export default function LessonsScreen() {
   const router = useRouter();
   const progress = useUserStore((state) => state.progress);
-
-  const beginnerLessons = allLessons.filter((l) => l.difficulty === "beginner");
-  const tacticsLessons = allLessons.filter((l) => l.category === "tactics");
 
   const isLessonCompleted = (lessonId: string): boolean => {
     return progress?.completedLessons.includes(lessonId) ?? false;
@@ -77,35 +114,22 @@ export default function LessonsScreen() {
           </Text>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Beginner</Text>
-            <Text style={styles.sectionSubtitle}>Learn how each piece moves</Text>
+        {sections.map((section) => (
+          <View key={section.title} style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+              <Text style={styles.sectionSubtitle}>{section.subtitle}</Text>
+            </View>
+            {section.lessons.map((lesson) => (
+              <LessonCard
+                key={lesson.id}
+                lesson={lesson}
+                completed={isLessonCompleted(lesson.id)}
+                onPress={() => handleLessonPress(lesson.id)}
+              />
+            ))}
           </View>
-          {beginnerLessons.map((lesson) => (
-            <LessonCard
-              key={lesson.id}
-              lesson={lesson}
-              completed={isLessonCompleted(lesson.id)}
-              onPress={() => handleLessonPress(lesson.id)}
-            />
-          ))}
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Tactics</Text>
-            <Text style={styles.sectionSubtitle}>Winning combinations and tricks</Text>
-          </View>
-          {tacticsLessons.map((lesson) => (
-            <LessonCard
-              key={lesson.id}
-              lesson={lesson}
-              completed={isLessonCompleted(lesson.id)}
-              onPress={() => handleLessonPress(lesson.id)}
-            />
-          ))}
-        </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
