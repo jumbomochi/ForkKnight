@@ -254,8 +254,8 @@ export const strategyLessons: Lesson[] = [
         title: "The Mighty Passed Pawn",
         content:
           "A passed pawn has no enemy pawns blocking it or on adjacent files. It's free to march to the other end of the board and promote! Passed pawns are huge advantages, especially in the endgame. Watch this passed pawn advance!",
-        fen: "4k3/8/8/3P4/8/8/8/4K3 w - - 0 1",
-        moves: ["d5d6", "e8d8", "d6d7"],
+        fen: "4k3/8/3PK3/8/8/8/8/8 w - - 0 1",
+        moves: ["d6d7", "e8d8", "e6f7"],
       },
       {
         id: "pawn-structure-quiz",
@@ -296,7 +296,7 @@ export const strategyLessons: Lesson[] = [
         title: "Rook Takes the Open File",
         content:
           "After pawns are exchanged, the e-file becomes open. Watch the Rook slide onto e1 to dominate the open file and pressure the enemy!",
-        fen: "r1bqkb1r/ppp2ppp/2n2n2/8/3pP3/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 6",
+        fen: "r1bqkb1r/ppp2ppp/2n2n2/3p4/4P3/2N2N2/PPP2PPP/R1BQ1RK1 w kq - 0 6",
         moves: ["e4d5", "f6d5", "f1e1"],
       },
       {
@@ -387,7 +387,7 @@ export const strategyLessons: Lesson[] = [
         title: "Knight on an Outpost",
         content:
           "Watch the Knight hop to d6 — a powerful outpost in the heart of Black's position. The Knight on d6 attacks c8, e8, f7, and f5, and Black has no pawns to chase it away!",
-        fen: "r1bqkb1r/ppp2ppp/5n2/3pP3/4N3/2N5/PPP2PPP/R1BQK2R w KQkq - 2 7",
+        fen: "r1bqkb1r/pp3ppp/5n2/3pP3/4N3/2N5/PPP2PPP/R1BQK2R w KQkq - 2 7",
         moves: ["e4d6"],
       },
       {
@@ -396,7 +396,7 @@ export const strategyLessons: Lesson[] = [
         title: "Find the Outpost!",
         content:
           "Your Knight is on e4 and has a chance to jump to a perfect outpost on d6 — deep in Black's position where no pawns can chase it away. Make that Knight leap!",
-        fen: "r1bqkb1r/ppp3pp/3p1n2/4p3/4N3/2N5/PPP2PPP/R1BQK2R w KQkq - 0 8",
+        fen: "r1bqkb1r/pp4pp/3p1n2/4p3/4N3/2N5/PPP2PPP/R1BQK2R w KQkq - 0 8",
         correctAnswer: "e4d6",
         hints: [
           "Look for a square in the opponent's half that their pawns cannot attack",

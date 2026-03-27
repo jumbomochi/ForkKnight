@@ -30,16 +30,16 @@ export const endgameLessons: Lesson[] = [
         title: "Watch Out for Stalemate!",
         content:
           "Stalemate happens when the opponent's King has NO legal moves but is NOT in check — and that means a draw! Be careful not to give the enemy King no moves unless it is already in checkmate. Always check if the King has somewhere to go before moving your Queen close.",
-        fen: "k7/8/K1Q5/8/8/8/8/8 b - - 0 1",
+        fen: "k7/8/KQ6/8/8/8/8/8 b - - 0 1",
       },
       {
         id: "kqk-demo",
         type: "demonstration",
         title: "Delivering Checkmate",
         content:
-          "Watch how the Queen and King work together to force checkmate! The King comes forward to help box in the enemy King, and then the Queen delivers the final blow.",
-        fen: "8/8/8/8/8/2k5/8/KQ6 w - - 0 1",
-        moves: ["b1b3", "c3c4", "a1a2", "c4d4", "b3b4", "d4d5", "a2b3"],
+          "Watch how the Queen and King work together to force checkmate! The Queen pushes the enemy King to the edge, and the King comes up to help deliver the final blow.",
+        fen: "8/1k6/8/1K6/8/8/8/Q7 w - - 0 1",
+        moves: ["a1a7", "b7c8", "b5b6", "c8d8", "a7d7"],
       },
       {
         id: "kqk-exercise",
@@ -203,9 +203,9 @@ export const endgameLessons: Lesson[] = [
         type: "demonstration",
         title: "Using the Opposition",
         content:
-          "Watch how White uses the opposition to push the Black King away and escort the pawn to promotion!",
-        fen: "8/8/8/8/3k4/8/3PK3/8 w - - 0 1",
-        moves: ["e2e3", "d4e5", "e3d3", "e5d5", "d2d4", "d5e5", "d3e3"],
+          "Watch how the King escorts the pawn forward. When the King is ahead of the pawn, the pawn can march to promotion!",
+        fen: "4k3/8/3PK3/8/8/8/8/8 w - - 0 1",
+        moves: ["d6d7", "e8d8", "e6f7"],
       },
       {
         id: "pawn-exercise",
@@ -362,8 +362,8 @@ export const endgameLessons: Lesson[] = [
         title: "Building the Bridge",
         content:
           "Watch how White builds a bridge: the Rook moves to cut off the enemy King from checks, then shelters the White King so the pawn promotes to a Queen!",
-        fen: "1K1R4/1P6/8/8/8/8/r7/2k5 w - - 0 1",
-        moves: ["d8d4", "a2a1", "b8c7", "a1c1", "c7d6", "c1d1", "d6e5", "d1e1", "e5d6", "e1d1", "d4d1"],
+        fen: "1K1R4/1P6/8/8/8/8/r7/7k w - - 0 1",
+        moves: ["d8d4", "a2a1", "b8c7", "a1c1", "c7d6", "c1d1", "d4d1"],
       },
       {
         id: "rook-philidor",

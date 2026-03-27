@@ -22,7 +22,7 @@ export const famousGamesLessons: Lesson[] = [
         title: "The King's Gambit Opening",
         content:
           "Anderssen opened with the King's Gambit — 1.e4 e5 2.f4! He offered a pawn to get his pieces moving fast. This was a very popular and daring opening in the 1800s. Kieseritzky accepted the pawn with 2...exf4. The battle was on! Anderssen wanted to attack, attack, attack.",
-        fen: "rnbqkbnr/pppp1ppp/8/8/4PpP1/8/PPPP3P/RNBQKBNR b KQkq g3 0 4",
+        fen: "rnbqkbnr/pppp1ppp/8/8/4Pp2/8/PPPP2PP/RNBQKBNR w KQkq - 0 3",
       },
       {
         id: "immortal-sacrifice-rooks",
@@ -100,7 +100,7 @@ export const famousGamesLessons: Lesson[] = [
         title: "Castle to Safety, Then Attack!",
         content:
           "After getting his pieces out, Morphy castled to keep his king safe. Then he doubled his rooks on the open d-file. By move 14, Morphy had ALL his pieces in the game working together, while the Duke and Count had their queen stuck trying to defend everything. This is why development matters so much!",
-        fen: "2kr3r/ppp2ppp/2n5/2b1p3/2B1P3/1QB5/PPP2PPP/3RK2R w K - 6 14",
+        fen: "2kr3r/ppp2ppp/2n5/2b1p3/2B1P3/1QB5/PPP2PPP/2KR3R w - - 6 14",
       },
       {
         id: "opera-finale",
@@ -108,7 +108,7 @@ export const famousGamesLessons: Lesson[] = [
         title: "The Beautiful Finish!",
         content:
           "The final combination is stunning! Morphy sacrificed his Queen with Qb8+! The Knight had to capture (Nxb8), and then Rd8# — the Rook delivered checkmate on the back rank! Morphy gave up his most powerful piece to clear the way for a simple Rook checkmate. Three brilliant moves to finish the game. This is the power of piece coordination!",
-        fen: "1n1Rkb1r/p4ppp/4q3/4p1B1/4P3/8/PPP2PPP/2K5 b k - 1 17",
+        fen: "1n1Rkb1r/p4ppp/4q3/4p1B1/4P3/8/PPP2PPP/2K5 b - - 1 17",
       },
       {
         id: "opera-quiz",
@@ -156,7 +156,7 @@ export const famousGamesLessons: Lesson[] = [
         type: "explanation",
         title: "The Stunning Rook Sacrifice!",
         content:
-          "Kasparov played Rxd4!! — offering his Rook where Topalov could simply capture it! This is a positional sacrifice — giving up material to gain overwhelming piece activity. Topalov took the Rook, but Kasparov's remaining Queen, Bishop, and Rook crashed through like a tidal wave. The sacrifice worked because all of Kasparov's pieces became incredibly active while Topalov's pieces couldn't help defend.",
+          "Kasparov played Rxd4!! — sacrificing his Rook by capturing a pawn on d4 where Topalov could simply take it back! This is a positional sacrifice — giving up material to gain overwhelming piece activity. Topalov captured the Rook, but Kasparov's remaining Queen, Bishop, and Rook crashed through like a tidal wave.",
         fen: "r3r1k1/pp3ppp/1qp1bn2/3p4/3P1B2/2PBR2Q/PP3PPP/4R1K1 w - - 0 24",
       },
       {
@@ -164,8 +164,8 @@ export const famousGamesLessons: Lesson[] = [
         type: "explanation",
         title: "What Made It Work",
         content:
-          "After the sacrifice, Kasparov's queen, bishop, and remaining rook all aimed at Topalov's king. The key lesson: sometimes ACTIVITY is worth more than material! A piece that can't move or help in the attack is almost useless. Kasparov's pieces had maximum activity, while Topalov's pieces were all tangled up. This is called a 'positional sacrifice.'",
-        fen: "r3r1k1/pp3ppp/1qp1bn2/8/3p1B2/2PBR2Q/PP3PPP/4R1K1 b - - 0 24",
+          "The key lesson from Kasparov's sacrifice: sometimes ACTIVITY is worth more than material! A piece that can't move or help in the attack is almost useless. Kasparov's pieces had maximum activity — his Queen, Bishops, and Rook all aimed at Topalov's King at once. Meanwhile, Topalov's pieces were tangled up and couldn't help defend. This is called a 'positional sacrifice.'",
+        fen: "r3r1k1/pp3ppp/1qp1bn2/3p4/3P1B2/2PBR2Q/PP3PPP/4R1K1 w - - 0 24",
       },
       {
         id: "kasparov-quiz",
@@ -222,7 +222,7 @@ export const famousGamesLessons: Lesson[] = [
         title: "Minor Piece Magic",
         content:
           "After giving up the queen, Fischer's bishops and knights worked together brilliantly — this is called 'piece coordination.' His dark-squared bishop on g7 was especially powerful, cutting across the board. Byrne tried to hold on, but Fischer's pieces were just too active. Every move by Fischer's pieces created new threats that Byrne couldn't handle all at once.",
-        fen: "r4rk1/pp1bppbp/6p1/3p4/2bP4/2P1pN2/PP2Q1PP/R4RK1 w - - 0 20",
+        fen: "r4rk1/pp1bppbp/6p1/3p4/2nP4/2P1pN2/PP2Q1PP/R4RK1 w - - 0 20",
       },
       {
         id: "century-final",
