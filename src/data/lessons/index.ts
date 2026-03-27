@@ -1,8 +1,9 @@
 import { beginnerLessons } from "./beginner";
 import { tacticsLessons } from "./tactics";
+import { openingsLessons } from "./openings";
 import type { Lesson, LessonCategory } from "@/types";
 
-export const allLessons: Lesson[] = [...beginnerLessons, ...tacticsLessons];
+export const allLessons: Lesson[] = [...beginnerLessons, ...tacticsLessons, ...openingsLessons];
 
 export const getLessonById = (id: string): Lesson | undefined => {
   return allLessons.find((lesson) => lesson.id === id);
@@ -20,4 +21,4 @@ export const getTacticsLessons = (): Lesson[] => {
   return allLessons.filter((lesson) => lesson.category === "tactics");
 };
 
-export { beginnerLessons, tacticsLessons };
+export { beginnerLessons, tacticsLessons, openingsLessons };
