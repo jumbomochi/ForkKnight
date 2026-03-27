@@ -524,9 +524,9 @@ export const strategyLessons: Lesson[] = [
         type: "demonstration",
         title: "Trade into a Winning Endgame",
         content:
-          "White has an extra pawn. By trading Queens, White simplifies into a winning King and pawn endgame where the extra pawn will decide the game. Watch the smart trade!",
-        fen: "4k3/4p3/8/3q4/3QP3/8/8/4K3 w - - 0 1",
-        moves: ["d4d5", "e8d7", "e1d2"],
+          "White has an extra pawn and wants to trade Queens to simplify. Watch: White plays Qd5, offering the trade right next to Black's Queen. Black takes Qxd5, then White recaptures with the pawn exd5. Now it's King and pawn vs King — an easy win!",
+        fen: "3qk3/8/8/8/4P3/8/8/3QK3 w - - 0 1",
+        moves: ["d1d5", "d8d5", "e4d5"],
       },
       {
         id: "when-to-trade-bad-bishop-trade",
