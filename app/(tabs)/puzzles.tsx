@@ -103,23 +103,32 @@ export default function PuzzlesScreen() {
                 const opTo = opponentMove.slice(2, 4) as Square;
                 const opPromotion = opponentMove.length > 4 ? opponentMove[4] as PieceSymbol : undefined;
 
-                const opResult = engine.makeMove({
-                  from: opFrom,
-                  to: opTo,
-                  promotion: opPromotion,
-                });
+                try {
+                  const opResult = engine.makeMove({
+                    from: opFrom,
+                    to: opTo,
+                    promotion: opPromotion,
+                  });
 
-                if (opResult) {
-                  setPositions(engine.getBoard());
-                  setLastMove({ from: opFrom, to: opTo });
-                  setMoveIndex(nextMoveIndex + 1);
+                  if (opResult) {
+                    setPositions(engine.getBoard());
+                    setLastMove({ from: opFrom, to: opTo });
+                    setMoveIndex(nextMoveIndex + 1);
 
-                  // Check if puzzle is complete after opponent move
-                  if (nextMoveIndex + 1 >= currentPuzzle.moves.length) {
-                    completePuzzleSolve();
+                    // Check if puzzle is complete after opponent move
+                    if (nextMoveIndex + 1 >= currentPuzzle.moves.length) {
+                      completePuzzleSolve();
+                    } else {
+                      setMessage("Good! Keep going...");
+                    }
                   } else {
-                    setMessage("Good! Keep going...");
+                    // Opponent move failed — skip to completion
+                    console.warn(`Invalid opponent move in puzzle ${currentPuzzle.id}: ${opponentMove}`);
+                    completePuzzleSolve();
                   }
+                } catch (e) {
+                  console.warn(`Error in puzzle ${currentPuzzle.id}: ${e}`);
+                  completePuzzleSolve();
                 }
               }, 400);
             }
