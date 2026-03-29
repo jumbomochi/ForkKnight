@@ -11,6 +11,7 @@ export interface UserProgress {
   level: number;
   puzzleRating: number;
   computerRating: number;
+  difficultyLevel: number;
   gamesPlayed: number;
   gamesWon: number;
   lastPlayedColor: "w" | "b";

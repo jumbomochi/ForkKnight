@@ -20,6 +20,7 @@ interface UserState {
   updateComputerRating: (newRating: number) => void;
   recordGameResult: (won: boolean, draw: boolean) => void;
   getNextPlayerColor: () => "w" | "b";
+  setDifficultyLevel: (level: number) => void;
 }
 
 const XP_PER_LEVEL = 100;
@@ -168,6 +169,23 @@ export const useUserStore = create<UserState>((set, get) => ({
     const state = get();
     // Alternate: if last was black, next is white
     return state.progress?.lastPlayedColor === "b" ? "w" : "b";
+  },
+
+  setDifficultyLevel: (level: number) => {
+    const state = get();
+    if (!state.progress) return;
+
+    const { getDifficultyByLevel } = require("@/config/difficulty");
+    const difficulty = getDifficultyByLevel(level);
+
+    const newProgress = {
+      ...state.progress,
+      difficultyLevel: level,
+      computerRating: difficulty.rating,
+    };
+
+    set({ progress: newProgress });
+    saveProgress(newProgress);
   },
 
   updateStreak: () => {

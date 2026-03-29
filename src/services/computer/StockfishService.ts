@@ -118,9 +118,9 @@ export class StockfishService {
   }
 
   private ratingToDepth(rating: number): number {
-    if (rating < 500) return 1;
-    if (rating < 700) return 2;
-    if (rating < 1000) return 3;
+    if (rating < 900) return 1;
+    if (rating < 1100) return 2;
+    if (rating < 1400) return 3;
     return 4;
   }
 
