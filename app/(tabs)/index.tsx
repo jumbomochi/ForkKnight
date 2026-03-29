@@ -74,7 +74,7 @@ export default function HomeScreen() {
           <View style={styles.spacer} />
           <Button
             title="Play vs Computer"
-            onPress={() => router.push("/game")}
+            onPress={() => router.push("/pregame")}
             variant="outline"
             size="large"
             fullWidth

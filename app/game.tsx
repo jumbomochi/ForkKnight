@@ -74,7 +74,7 @@ export default function GameScreen() {
       if (xp > 0) addXp(xp);
 
       // Update rating
-      const playerRating = progress?.computerRating ?? 400;
+      const playerRating = progress?.computerRating ?? 800;
       const computerRating = stockfish?.getComputerRating(playerRating) ?? playerRating;
       const newRating = stockfish?.calculateNewRating(playerRating, computerRating, won, draw) ?? playerRating;
       const change = newRating - playerRating;
@@ -95,7 +95,7 @@ export default function GameScreen() {
     async (eng: ChessEngine, sf: StockfishService) => {
       if (!eng || !sf) return;
 
-      const rating = progress?.computerRating ?? 400;
+      const rating = progress?.computerRating ?? 800;
       const move = await sf.getBestMove(eng.getFen(), rating);
 
       if (move && move.length >= 4) {
@@ -256,7 +256,7 @@ export default function GameScreen() {
           setGameResult("loss");
           setXpEarned(0);
 
-          const playerRating = progress?.computerRating ?? 400;
+          const playerRating = progress?.computerRating ?? 800;
           const computerRating = stockfish?.getComputerRating(playerRating) ?? playerRating;
           const newRating = stockfish?.calculateNewRating(playerRating, computerRating, false, false) ?? playerRating;
           setRatingChange(newRating - playerRating);
@@ -328,7 +328,7 @@ export default function GameScreen() {
           <Button title="← Back" variant="ghost" onPress={handleBack} />
           <View style={styles.ratingBadge}>
             <Text style={styles.ratingText}>
-              Rating: {progress?.computerRating ?? 400}
+              Rating: {progress?.computerRating ?? 800}
             </Text>
           </View>
         </View>

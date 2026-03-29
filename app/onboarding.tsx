@@ -12,16 +12,20 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserStore } from "@/stores/useUserStore";
 import { colors, spacing, fontSize, fontWeight, borderRadius } from "@/utils/theme";
+import { DifficultyPicker } from "@/components/game";
+import { DEFAULT_DIFFICULTY_LEVEL } from "@/config/difficulty";
 
-type Step = "welcome" | "age" | "parent-consent" | "ready";
+type Step = "welcome" | "age" | "parent-consent" | "difficulty" | "ready";
 
 export default function OnboardingScreen() {
   const [step, setStep] = useState<Step>("welcome");
   const [age, setAge] = useState("");
   const [parentCode, setParentCode] = useState("");
   const [error, setError] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState(DEFAULT_DIFFICULTY_LEVEL);
 
   const completeOnboarding = useUserStore((s) => s.completeOnboarding);
+  const setDifficultyLevel = useUserStore((s) => s.setDifficultyLevel);
 
   const handleAgeSubmit = () => {
     const ageNum = parseInt(age, 10);
@@ -33,7 +37,7 @@ export default function OnboardingScreen() {
     if (ageNum < 13) {
       setStep("parent-consent");
     } else {
-      setStep("ready");
+      setStep("difficulty");
     }
   };
 
@@ -45,10 +49,11 @@ export default function OnboardingScreen() {
       return;
     }
     setError("");
-    setStep("ready");
+    setStep("difficulty");
   };
 
   const handleComplete = async () => {
+    setDifficultyLevel(selectedLevel);
     await completeOnboarding();
   };
 
@@ -161,6 +166,28 @@ export default function OnboardingScreen() {
                 accessibilityLabel="Confirm parental consent"
               >
                 <Text style={styles.primaryButtonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {step === "difficulty" && (
+            <View style={styles.stepContainer}>
+              <Text style={styles.emoji}>♟</Text>
+              <Text style={styles.title}>What's your chess level?</Text>
+              <Text style={styles.subtitle}>
+                This helps us match you with the right computer opponent
+              </Text>
+              <DifficultyPicker
+                selectedLevel={selectedLevel}
+                onSelect={setSelectedLevel}
+              />
+              <TouchableOpacity
+                style={[styles.primaryButton, { marginTop: spacing.lg }]}
+                onPress={() => setStep("ready")}
+                accessibilityRole="button"
+                accessibilityLabel="Continue to start"
+              >
+                <Text style={styles.primaryButtonText}>Continue</Text>
               </TouchableOpacity>
             </View>
           )}
