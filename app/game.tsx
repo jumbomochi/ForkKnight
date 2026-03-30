@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ChessBoard } from "@/components/board";
@@ -36,6 +36,7 @@ export default function GameScreen() {
   const [xpEarned, setXpEarned] = useState(0);
   const [ratingChange, setRatingChange] = useState(0);
   const [message, setMessage] = useState("Your turn");
+  const [pendingPromotion, setPendingPromotion] = useState<{ from: Square; to: Square } | null>(null);
 
   const isPlayerTurn = useCallback(() => {
     return engine?.turn() === playerColor;
@@ -164,6 +165,17 @@ export default function GameScreen() {
       if (!engine || !stockfish || gameOver || isComputerThinking) return false;
       if (!isPlayerTurn()) return false;
 
+      // Check if this is a pawn promotion move
+      const piece = positions.find((p) => p.square === from);
+      const isPromotion =
+        piece?.type === "p" &&
+        ((piece.color === "w" && to[1] === "8") || (piece.color === "b" && to[1] === "1"));
+
+      if (isPromotion) {
+        setPendingPromotion({ from, to });
+        return true;
+      }
+
       const move = engine.makeMove({ from, to });
 
       if (move) {
@@ -183,7 +195,7 @@ export default function GameScreen() {
       }
       return false;
     },
-    [engine, stockfish, gameOver, isComputerThinking, isPlayerTurn, handleGameOver, makeComputerMove]
+    [engine, stockfish, gameOver, isComputerThinking, isPlayerTurn, handleGameOver, makeComputerMove, positions]
   );
 
   const handleSquarePress = useCallback(
@@ -213,6 +225,30 @@ export default function GameScreen() {
       setSelectedSquare(null);
     },
     [engine, positions, gameOver, isComputerThinking, isPlayerTurn, playerColor, tryMove]
+  );
+
+  const executePromotion = useCallback(
+    (piece: PieceSymbol) => {
+      if (!engine || !stockfish || !pendingPromotion) return;
+
+      const { from, to } = pendingPromotion;
+      const move = engine.makeMove({ from, to, promotion: piece });
+      setPendingPromotion(null);
+
+      if (move) {
+        setPositions(engine.getBoard());
+        setLastMove({ from, to });
+
+        if (engine.isGameOver()) {
+          handleGameOver(engine);
+        } else {
+          setIsComputerThinking(true);
+          setMessage("Computer thinking...");
+          setTimeout(() => makeComputerMove(engine, stockfish), 500 + Math.random() * 500);
+        }
+      }
+    },
+    [engine, stockfish, pendingPromotion, handleGameOver, makeComputerMove]
   );
 
   const getHighlightedSquares = useCallback((): Square[] => {
@@ -379,6 +415,26 @@ export default function GameScreen() {
           />
         </View>
 
+        {pendingPromotion && (
+          <View style={styles.promotionOverlay}>
+            <View style={styles.promotionBox}>
+              <Text style={styles.promotionTitle}>Promote to:</Text>
+              <View style={styles.promotionOptions}>
+                {([["q", "♛"], ["r", "♜"], ["b", "♝"], ["n", "♞"]] as const).map(([piece, symbol]) => (
+                  <TouchableOpacity
+                    key={piece}
+                    style={styles.promotionButton}
+                    onPress={() => executePromotion(piece as PieceSymbol)}
+                    accessibilityLabel={`Promote to ${piece === "q" ? "Queen" : piece === "r" ? "Rook" : piece === "b" ? "Bishop" : "Knight"}`}
+                  >
+                    <Text style={styles.promotionPiece}>{symbol}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </View>
+        )}
+
         <GameResultModal
           visible={showResultModal}
           result={gameResult}
@@ -455,5 +511,43 @@ const styles = StyleSheet.create({
   actionButton: {
     marginHorizontal: spacing.xs,
     minWidth: 80,
+  },
+  promotionOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
+  promotionBox: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    alignItems: "center",
+  },
+  promotionTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  promotionOptions: {
+    flexDirection: "row",
+  },
+  promotionButton: {
+    width: 64,
+    height: 64,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background,
+    borderRadius: borderRadius.md,
+    marginHorizontal: spacing.xs,
+  },
+  promotionPiece: {
+    fontSize: 36,
   },
 });

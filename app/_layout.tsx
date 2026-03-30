@@ -49,6 +49,18 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
+          name="pregame"
+          options={{
+            title: "Play vs Computer",
+          }}
+        />
+        <Stack.Screen
+          name="game"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="privacy-policy"
           options={{
             title: "Privacy Policy",
