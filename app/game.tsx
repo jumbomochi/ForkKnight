@@ -358,7 +358,7 @@ export default function GameScreen() {
   const canUndo = engine.getMoveHistory().length >= 2 && !gameOver && !isComputerThinking;
 
   return (
-    <SafeAreaView style={styles.container} edges={["bottom"]}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
           <Button title="← Back" variant="ghost" onPress={handleBack} />
