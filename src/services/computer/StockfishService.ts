@@ -1,5 +1,6 @@
 import { UciEngine } from "./engine/types";
 import { MinimaxEngine } from "./engine/MinimaxEngine";
+import { HINT_PROFILE, profileForRating } from "./engine/strengthProfile";
 
 export class StockfishService {
   private engine: UciEngine;
@@ -14,15 +15,16 @@ export class StockfishService {
     this.ready = true;
   }
 
-  private ratingToOpts(rating: number): { movetimeMs: number; uciElo?: number; skill?: number } {
-    // Temporary mapping — Task 2 replaces this with strengthProfile.
-    return { movetimeMs: 500, uciElo: rating };
-  }
-
   async getBestMove(fen: string, playerRating: number): Promise<string | null> {
     if (!this.ready) throw new Error("Engine not initialized");
+    const profile = profileForRating(playerRating);
     try {
-      return await this.engine.bestMove(fen, this.ratingToOpts(playerRating));
+      return await this.engine.bestMove(fen, {
+        movetimeMs: profile.movetimeMs,
+        skill: profile.skill,
+        uciElo: profile.uciElo,
+        maxError: profile.maxError,
+      });
     } catch {
       return null;
     }
@@ -31,7 +33,10 @@ export class StockfishService {
   async getHintMove(fen: string): Promise<string | null> {
     if (!this.ready) throw new Error("Engine not initialized");
     try {
-      return await this.engine.bestMove(fen, { movetimeMs: 600, uciElo: 1800 });
+      return await this.engine.bestMove(fen, {
+        movetimeMs: HINT_PROFILE.movetimeMs,
+        uciElo: HINT_PROFILE.uciElo,
+      });
     } catch {
       return null;
     }
