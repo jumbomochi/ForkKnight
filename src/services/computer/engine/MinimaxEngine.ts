@@ -97,6 +97,8 @@ export class MinimaxEngine implements UciEngine {
   }
 
   async bestMove(fen: string, opts: EngineOpts): Promise<string> {
+    // MinimaxEngine is depth-bounded, not time-bounded — opts.movetimeMs is ignored.
+    // The native Stockfish engine honors movetimeMs; this fallback caps work via depth instead.
     const chess = new Chess(fen);
     const moves = chess.moves({ verbose: true });
     if (moves.length === 0) throw new Error("MinimaxEngine: no legal moves");
