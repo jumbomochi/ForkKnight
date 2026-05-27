@@ -61,5 +61,11 @@ describe("profileForRating", () => {
     it("clamps above 1900 to Advanced", () => {
       expect(profileForRating(9999).uciElo).toBe(1900);
     });
+
+    it("resolves exact midpoints to the lower tier", () => {
+      // 900 is exactly halfway between Beginner (800) and Novice (1000).
+      // Strict-less-than in the nearest-tier scan keeps the first match.
+      expect(profileForRating(900).skill).toBe(0);
+    });
   });
 });

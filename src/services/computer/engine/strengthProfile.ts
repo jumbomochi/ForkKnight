@@ -1,7 +1,7 @@
 export interface StrengthProfile {
-  /** Stockfish Skill Level 0-20. Set for sub-1320 tiers. */
+  /** Stockfish Skill Level 0-20. Set for the three lowest tiers (rating ≤ 1200). */
   skill?: number;
-  /** Stockfish UCI_Elo target. Set for 1500+ tiers. */
+  /** Stockfish UCI_Elo target. Set for the two highest tiers (rating ≥ 1500). */
   uciElo?: number;
   /** Stockfish Skill Level Maximum Error (centipawns). Used at Beginner only. */
   maxError?: number;
@@ -27,7 +27,8 @@ const TIERS: readonly Tier[] = [
 /**
  * Maps an arbitrary rating to the nearest configured difficulty tier and
  * returns its engine profile. Below 800 clamps to Beginner; above 1900 clamps
- * to Advanced; values in between snap to the nearest tier rating.
+ * to Advanced; values in between snap to the nearest tier rating. Exact
+ * midpoints (e.g. 900) resolve to the lower tier, since the loop uses strict `<`.
  */
 export function profileForRating(rating: number): StrengthProfile {
   let nearest = TIERS[0]!;
