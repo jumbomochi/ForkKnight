@@ -1,24 +1,33 @@
 import { Chess } from "chess.js";
 import { StockfishService } from "@/services/computer/StockfishService";
 import { MinimaxEngine } from "@/services/computer/engine/MinimaxEngine";
+import { UciEngine } from "@/services/computer/engine/types";
 import { createRng } from "@/services/computer/engine/random";
+
+/**
+ * Returns a fixed move regardless of input. Used to isolate blunder-injection
+ * behavior from engine-strength behavior in tests.
+ */
+class FixedMoveEngine implements UciEngine {
+  constructor(private move: string) {}
+  async initialize() {}
+  async bestMove() { return this.move; }
+  async dispose() {}
+}
 
 describe("StockfishService blunder injection", () => {
   it("never blunders at Tournament rating (blunderRate=0)", async () => {
     const rng = createRng(123);
-    const service = new StockfishService(new MinimaxEngine(), rng);
+    const service = new StockfishService(new FixedMoveEngine("e2e4"), rng);
     await service.initialize();
 
-    const fen = "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1";
-    const chess = new Chess(fen);
-    const engineMove = await new MinimaxEngine().bestMove(fen, { movetimeMs: 200, uciElo: 1500 });
+    const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     // At blunderRate=0 the service must always return the engine's chosen move.
     for (let i = 0; i < 20; i++) {
       const m = await service.getBestMove(fen, 1500);
-      expect(m).toBe(engineMove);
+      expect(m).toBe("e2e4");
     }
-    expect(chess).toBeDefined(); // silence unused
   });
 
   it("blunders ~40% of the time at Beginner rating", async () => {
