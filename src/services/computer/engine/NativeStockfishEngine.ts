@@ -13,6 +13,10 @@ export class NativeStockfishEngine implements UciEngine {
   private subscription: { remove: () => void } | null = null;
   private pending: PendingRequest | null = null;
   private nextId = 1;
+  // Number of stale "bestmove" lines we still expect from cancelled or
+  // interrupted `go` commands. Stockfish emits exactly one bestmove per `go`,
+  // so on each cancellation we increment this and drop the next bestmove.
+  private staleBestmoves = 0;
   private waitingFor: ((line: string) => boolean) | null = null;
   private waitResolve: (() => void) | null = null;
 
@@ -31,10 +35,14 @@ export class NativeStockfishEngine implements UciEngine {
   }
 
   async bestMove(fen: string, opts: EngineOpts): Promise<string> {
-    // Cancel any in-flight request first.
+    // Cancel any in-flight request first. Stockfish is still computing for
+    // the previous `go`, so tell it to stop and remember to drop the stale
+    // bestmove it will emit before the new one.
     if (this.pending) {
       this.pending.reject(new Error("Cancelled by newer request"));
       this.pending = null;
+      this.staleBestmoves++;
+      this.bridge.send("stop");
     }
 
     this.applyOptions(opts);
@@ -48,6 +56,7 @@ export class NativeStockfishEngine implements UciEngine {
       const timeout = setTimeout(() => {
         if (this.pending?.id === id) {
           this.pending = null;
+          this.staleBestmoves++;
           this.bridge.send("stop");
           reject(new Error("bestmove timeout"));
         }
@@ -74,9 +83,22 @@ export class NativeStockfishEngine implements UciEngine {
       this.pending.reject(new Error("Disposed"));
       this.pending = null;
     }
+    this.staleBestmoves = 0;
     this.subscription?.remove();
     this.subscription = null;
     await this.bridge.stop();
+  }
+
+  /**
+   * Interrupt any in-flight `go` without disposing the engine. Used by the
+   * app's AppState handler when backgrounding mid-search: we tell Stockfish
+   * to stop computing (frees CPU before the OS suspends us) and let the
+   * resulting bestmove resolve normally.
+   */
+  interrupt(): void {
+    if (this.pending) {
+      this.bridge.send("stop");
+    }
   }
 
   private applyOptions(opts: EngineOpts): void {
@@ -104,6 +126,11 @@ export class NativeStockfishEngine implements UciEngine {
       return;
     }
     if (line.startsWith("bestmove ")) {
+      // Drop bestmove lines that belong to cancelled/interrupted `go` commands.
+      if (this.staleBestmoves > 0) {
+        this.staleBestmoves--;
+        return;
+      }
       // Stockfish emits "bestmove (none)" when there are no legal moves
       // (game already over). The string "(none)" is passed through as-is;
       // StockfishService's catch block falls back to a random legal move

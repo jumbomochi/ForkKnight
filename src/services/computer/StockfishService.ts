@@ -88,6 +88,14 @@ export class StockfishService {
     return playerRating + Math.floor(this.rng() * 100) - 50;
   }
 
+  /**
+   * Interrupt any in-flight bestMove computation without disposing.
+   * No-op if the underlying engine doesn't support interruption.
+   */
+  interrupt(): void {
+    this.engine.interrupt?.();
+  }
+
   async dispose(): Promise<void> {
     await this.engine.dispose();
     this.ready = false;

@@ -98,23 +98,22 @@ describe("NativeStockfishEngine", () => {
     await engine.initialize();
 
     // Issue first bestMove — no scripted response so it stays pending.
-    // bestMove calls applyOptions + sends position/go synchronously, then
-    // returns a Promise.  The second bestMove cancels the first.
     const firstPromise = engine
       .bestMove("startpos", { movetimeMs: 200 })
       .catch((e) => e as Error);
 
-    // Issue second bestMove; its go command will emit bestmove a2a3 synchronously.
+    // Real Stockfish behavior on cancellation: a "stop" command produces the
+    // bestmove for the previously-cancelled search BEFORE we issue the new
+    // "go". The adapter should drop that stale bestmove and resolve only the
+    // new one.
+    bridge.scripted.push({ matcher: (c) => c === "stop", emit: ["bestmove h2h3"] });
     bridge.scripted.push({
       matcher: (c) => c.startsWith("go"),
       emit: ["bestmove a2a3"],
     });
+
     const secondMove = await engine.bestMove("startpos", { movetimeMs: 200 });
     expect(secondMove).toBe("a2a3");
-
-    // The first promise was rejected when the second request was issued.
-    // Now emit the stale bestmove — it should be silently dropped (no pending).
-    bridge.emit("bestmove h2h3");
 
     const firstResult = await firstPromise;
     expect(firstResult).toBeInstanceOf(Error);

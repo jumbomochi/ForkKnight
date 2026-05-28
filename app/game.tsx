@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity, AppState } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ChessBoard } from "@/components/board";
@@ -153,6 +153,17 @@ export default function GameScreen() {
       // Cleanup handled by singleton
     };
   }, []);
+
+  // Tell the engine to stop computing when the app goes to the background, so
+  // we don't keep the CPU pegged before iOS suspends us. Resuming foreground
+  // is a no-op — the next move will start a fresh search.
+  useEffect(() => {
+    if (!stockfish) return;
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state !== "active") stockfish.interrupt();
+    });
+    return () => sub.remove();
+  }, [stockfish]);
 
   const tryMove = useCallback(
     (from: Square, to: Square) => {

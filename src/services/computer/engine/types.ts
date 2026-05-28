@@ -15,6 +15,11 @@ export interface EngineOpts {
 export interface UciEngine {
   initialize(): Promise<void>;
   bestMove(fen: string, opts: EngineOpts): Promise<string>;
+  /**
+   * Interrupt any in-flight `bestMove` search without disposing the engine.
+   * Optional — depth-bounded fallbacks like MinimaxEngine don't implement it.
+   */
+  interrupt?(): void;
   dispose(): Promise<void>;
 }
 
