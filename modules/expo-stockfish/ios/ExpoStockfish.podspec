@@ -28,5 +28,6 @@ Pod::Spec.new do |s|
     '../cpp/stockfish/syzygy/**/*'
   ]
   s.preserve_paths = '../cpp/stockfish/**/*'
-  s.header_mappings_dir = '../cpp/stockfish'
+  # Stockfish headers are used as private includes only; do not set
+  # header_mappings_dir or they would shadow this pod's own public headers.
 end
