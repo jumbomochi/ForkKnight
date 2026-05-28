@@ -3,6 +3,10 @@
 // Swift/ObjC++ bridge calls to feed UCI commands and read engine output
 // line-by-line.
 //
+// NOTE: This file is byte-identical to
+// android/src/main/cpp/stockfish_entry.cpp. The build systems don't share
+// it, so keep both copies in sync when editing.
+//
 // Stockfish 17.1's main.cpp does:
 //     Bitboards::init();
 //     Position::init();

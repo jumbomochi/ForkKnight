@@ -10,6 +10,10 @@ extern "C" {
   void stockfish_stop();
 }
 
+// The native lifecycle (start/stop) is single-callsite: the Kotlin module
+// dispatches to it from JS-thread AsyncFunctions, which are serialized. The
+// globals below are not protected against concurrent native* calls from
+// multiple threads; the Kotlin layer is responsible for serialization.
 namespace {
   std::thread reader_thread;
   std::atomic<bool> reader_running{false};
@@ -30,6 +34,7 @@ Java_expo_modules_stockfish_ExpoStockfishModule_nativeStart(JNIEnv* env, jobject
   g_module_global = env->NewGlobalRef(self);
   jclass cls = env->GetObjectClass(self);
   g_emit_method = env->GetMethodID(cls, "emitLine", "(Ljava/lang/String;)V");
+  env->DeleteLocalRef(cls);
 
   stockfish_start();
 
@@ -51,6 +56,7 @@ Java_expo_modules_stockfish_ExpoStockfishModule_nativeStart(JNIEnv* env, jobject
 extern "C" JNIEXPORT void JNICALL
 Java_expo_modules_stockfish_ExpoStockfishModule_nativeSend(JNIEnv* env, jobject, jstring command) {
   const char* c = env->GetStringUTFChars(command, nullptr);
+  if (!c) return;  // JVM OOM — drop the command rather than UB into stockfish_send.
   stockfish_send(c);
   env->ReleaseStringUTFChars(command, c);
 }
