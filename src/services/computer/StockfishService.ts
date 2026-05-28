@@ -19,6 +19,10 @@ export class StockfishService {
     try {
       await this.engine.initialize();
     } catch (err) {
+      // Silent degradation by design: a Stockfish handshake failure
+      // shouldn't block the player from starting a game. The console.warn
+      // gives operators a signal in device logs; the user just gets the
+      // weaker MinimaxEngine instead of an error dialog.
       console.warn("[StockfishService] Engine init failed, falling back to MinimaxEngine:", err);
       this.engine = new MinimaxEngine();
       await this.engine.initialize();
