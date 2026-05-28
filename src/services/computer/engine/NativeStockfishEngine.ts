@@ -104,6 +104,10 @@ export class NativeStockfishEngine implements UciEngine {
       return;
     }
     if (line.startsWith("bestmove ")) {
+      // Stockfish emits "bestmove (none)" when there are no legal moves
+      // (game already over). The string "(none)" is passed through as-is;
+      // StockfishService's catch block falls back to a random legal move
+      // (which will also be unavailable), which the caller treats as null.
       const move = line.split(" ")[1] ?? "";
       if (this.pending) {
         const p = this.pending;
