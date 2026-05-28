@@ -35,7 +35,8 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-asset"
+      "expo-asset",
+      "./modules/expo-stockfish/app.plugin.js"
     ],
     "experiments": {
       "typedRoutes": true
