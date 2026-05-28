@@ -6,16 +6,18 @@ public class ExpoStockfishModule: Module {
 
     Events("stockfish.line")
 
-    AsyncFunction("start") {
-      self.sendEvent("stockfish.line", ["line": "echo: started"])
+    AsyncFunction("start") { [weak self] in
+      StockfishBridge.shared().start { [weak self] line in
+        self?.sendEvent("stockfish.line", ["line": line])
+      }
     }
 
     Function("send") { (command: String) in
-      self.sendEvent("stockfish.line", ["line": "echo: \(command)"])
+      StockfishBridge.shared().send(command)
     }
 
     AsyncFunction("stop") {
-      self.sendEvent("stockfish.line", ["line": "echo: stopped"])
+      StockfishBridge.shared().stop()
     }
   }
 }

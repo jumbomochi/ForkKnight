@@ -16,11 +16,12 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'GCC_PREPROCESSOR_DEFINITIONS' => 'NDEBUG=1 IS_64BIT=1 USE_POPCNT=1',
-    'OTHER_CPLUSPLUSFLAGS' => '-fno-exceptions -fno-rtti -O3'
+    'OTHER_CPLUSPLUSFLAGS' => '-fno-exceptions -fno-rtti -O3',
+    'SWIFT_OBJC_BRIDGING_HEADER' => '${PODS_TARGET_SRCROOT}/ExpoStockfish-Bridging-Header.h'
   }
 
   s.source_files = [
-    '**/*.{h,m,swift}',
+    '**/*.{h,m,mm,swift,cpp}',
     '../cpp/stockfish/**/*.{cpp,h}'
   ]
   s.exclude_files = [
