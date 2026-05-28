@@ -13,8 +13,20 @@ Pod::Spec.new do |s|
 
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    'SWIFT_COMPILATION_MODE' => 'wholemodule',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'GCC_PREPROCESSOR_DEFINITIONS' => 'NDEBUG=1 IS_64BIT=1 USE_POPCNT=1',
+    'OTHER_CPLUSPLUSFLAGS' => '-fno-exceptions -fno-rtti -O3'
   }
 
-  s.source_files = '**/*.{h,m,swift}'
+  s.source_files = [
+    '**/*.{h,m,swift}',
+    '../cpp/stockfish/**/*.{cpp,h}'
+  ]
+  s.exclude_files = [
+    '../cpp/stockfish/main.cpp',
+    '../cpp/stockfish/syzygy/**/*'
+  ]
+  s.preserve_paths = '../cpp/stockfish/**/*'
+  s.header_mappings_dir = '../cpp/stockfish'
 end
