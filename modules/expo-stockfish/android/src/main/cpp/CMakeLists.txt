@@ -15,6 +15,7 @@ list(FILTER STOCKFISH_SOURCES EXCLUDE REGEX "${STOCKFISH_DIR}/syzygy/.*")
 
 add_library(expo_stockfish SHARED
   stockfish_jni.cpp
+  stockfish_entry.cpp
   ${STOCKFISH_SOURCES}
 )
 
