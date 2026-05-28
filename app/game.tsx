@@ -134,22 +134,16 @@ export default function GameScreen() {
       setPlayerColor(color);
 
       const sf = getStockfishService();
-      try {
-        await sf.initialize();
-        setStockfish(sf);
+      await sf.initialize();
+      setStockfish(sf);
 
-        // If computer plays first (player is black), make computer move
-        if (color === "b") {
-          setIsComputerThinking(true);
-          setMessage("Computer thinking...");
-          setTimeout(() => makeComputerMove(newEngine, sf), 500);
-        } else {
-          setMessage("Your turn - White to move");
-        }
-      } catch (error) {
-        console.error("Failed to initialize Stockfish:", error);
-        Alert.alert("Error", "Failed to start computer opponent. Please try again.");
-        router.back();
+      // If computer plays first (player is black), make computer move
+      if (color === "b") {
+        setIsComputerThinking(true);
+        setMessage("Computer thinking...");
+        setTimeout(() => makeComputerMove(newEngine, sf), 500);
+      } else {
+        setMessage("Your turn - White to move");
       }
     };
 

@@ -1,5 +1,5 @@
 import { Chess } from "chess.js";
-import { StockfishService } from "@/services/computer/StockfishService";
+import { StockfishService, _resetStockfishServiceForTests } from "@/services/computer/StockfishService";
 import { MinimaxEngine } from "@/services/computer/engine/MinimaxEngine";
 import { UciEngine } from "@/services/computer/engine/types";
 import { createRng } from "@/services/computer/engine/random";
@@ -63,5 +63,25 @@ describe("StockfishService blunder injection", () => {
       const m = await service.getBestMove(fen, 800);
       expect(legal).toContain(m);
     }
+  });
+});
+
+describe("StockfishService initialization fallback", () => {
+  beforeEach(() => _resetStockfishServiceForTests());
+
+  it("falls back to MinimaxEngine when the supplied engine throws on initialize", async () => {
+    const failing: any = {
+      initialize: async () => { throw new Error("native missing"); },
+      bestMove: async () => "should not be called",
+      dispose: async () => {},
+    };
+    const service = new StockfishService(failing);
+    await service.initialize();
+
+    const move = await service.getBestMove(
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      1200,
+    );
+    expect(move).toMatch(/^[a-h][1-8][a-h][1-8][qrbn]?$/);
   });
 });

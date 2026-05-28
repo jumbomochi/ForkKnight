@@ -1,6 +1,7 @@
 import { Chess } from "chess.js";
 import { UciEngine } from "./engine/types";
 import { MinimaxEngine } from "./engine/MinimaxEngine";
+import { NativeStockfishEngine } from "./engine/NativeStockfishEngine";
 import { HINT_PROFILE, profileForRating, StrengthProfile } from "./engine/strengthProfile";
 import { defaultRng, Rng } from "./engine/random";
 
@@ -15,7 +16,13 @@ export class StockfishService {
   }
 
   async initialize(): Promise<void> {
-    await this.engine.initialize();
+    try {
+      await this.engine.initialize();
+    } catch (err) {
+      console.warn("[StockfishService] Engine init failed, falling back to MinimaxEngine:", err);
+      this.engine = new MinimaxEngine();
+      await this.engine.initialize();
+    }
     this.ready = true;
   }
 
@@ -83,10 +90,20 @@ export class StockfishService {
   }
 }
 
+function createEngine(): UciEngine {
+  try {
+    const bridge = require("expo-stockfish");
+    return new NativeStockfishEngine(bridge);
+  } catch (err) {
+    console.warn("[StockfishService] Native module unavailable, using MinimaxEngine:", err);
+    return new MinimaxEngine();
+  }
+}
+
 let instance: StockfishService | null = null;
 
 export function getStockfishService(): StockfishService {
-  if (!instance) instance = new StockfishService();
+  if (!instance) instance = new StockfishService(createEngine());
   return instance;
 }
 
