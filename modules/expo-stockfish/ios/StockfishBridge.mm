@@ -30,18 +30,23 @@ extern "C" {
 }
 
 - (void)startWithCallback:(StockfishLineCallback)callback {
-  if (_running) return;
-  _callback = [callback copy];
-  _running = YES;
+  @synchronized (self) {
+    if (_running) return;
+    _callback = [callback copy];
+    _running = YES;
+  }
   stockfish_start();
 
+  __weak typeof(self) weakSelf = self;
   dispatch_async(_readQueue, ^{
     char buf[4096];
-    while (self->_running) {
+    while (true) {
+      __strong typeof(self) strongSelf = weakSelf;
+      if (strongSelf == nil || !strongSelf->_running) break;
       if (stockfish_read_line(buf, (int)sizeof(buf), 100)) {
         NSString *line = [NSString stringWithUTF8String:buf];
-        if (line != nil && self->_callback) {
-          self->_callback(line);
+        if (line != nil && strongSelf->_callback) {
+          strongSelf->_callback(line);
         }
       }
     }
@@ -54,10 +59,12 @@ extern "C" {
 }
 
 - (void)stop {
-  if (!_running) return;
-  _running = NO;
+  @synchronized (self) {
+    if (!_running) return;
+    _running = NO;
+    _callback = nil;
+  }
   stockfish_stop();
-  _callback = nil;
 }
 
 @end

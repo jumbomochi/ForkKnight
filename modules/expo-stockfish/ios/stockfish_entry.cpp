@@ -122,6 +122,10 @@ extern "C" void stockfish_send(const char* command) {
   in_cv.notify_all();
 }
 
+// Returns the next engine output line. Lines never contain a trailing
+// newline (QueueOutBuf splits on '\n' and drops it). Lines longer than
+// out_size-1 bytes are silently truncated; UCI output is line-oriented
+// and small in practice.
 extern "C" bool stockfish_read_line(char* out, int out_size, int timeout_ms) {
   if (out == nullptr || out_size <= 0) return false;
   std::unique_lock<std::mutex> lk(out_mu);
