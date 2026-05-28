@@ -17,3 +17,14 @@ export interface UciEngine {
   bestMove(fen: string, opts: EngineOpts): Promise<string>;
   dispose(): Promise<void>;
 }
+
+/**
+ * Injectable abstraction over the native expo-stockfish module.
+ * Allows tests to supply a fake bridge without the native module.
+ */
+export interface NativeStockfishBridge {
+  start(): Promise<void>;
+  send(command: string): void;
+  stop(): Promise<void>;
+  onLine(listener: (event: { line: string }) => void): { remove: () => void };
+}
