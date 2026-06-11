@@ -1,0 +1,10 @@
+{
+  "name": "expo-stockfish",
+  "version": "1.0.0",
+  "description": "Local Expo module wrapping Stockfish 17.1 via the UCI protocol.",
+  "main": "index.ts",
+  "private": true,
+  "expo": {
+    "platforms": ["ios", "android"]
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity, AppState } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ChessBoard } from "@/components/board";
@@ -134,22 +134,16 @@ export default function GameScreen() {
       setPlayerColor(color);
 
       const sf = getStockfishService();
-      try {
-        await sf.initialize();
-        setStockfish(sf);
+      await sf.initialize();
+      setStockfish(sf);
 
-        // If computer plays first (player is black), make computer move
-        if (color === "b") {
-          setIsComputerThinking(true);
-          setMessage("Computer thinking...");
-          setTimeout(() => makeComputerMove(newEngine, sf), 500);
-        } else {
-          setMessage("Your turn - White to move");
-        }
-      } catch (error) {
-        console.error("Failed to initialize Stockfish:", error);
-        Alert.alert("Error", "Failed to start computer opponent. Please try again.");
-        router.back();
+      // If computer plays first (player is black), make computer move
+      if (color === "b") {
+        setIsComputerThinking(true);
+        setMessage("Computer thinking...");
+        setTimeout(() => makeComputerMove(newEngine, sf), 500);
+      } else {
+        setMessage("Your turn - White to move");
       }
     };
 
@@ -159,6 +153,17 @@ export default function GameScreen() {
       // Cleanup handled by singleton
     };
   }, []);
+
+  // Tell the engine to stop computing when the app goes to the background, so
+  // we don't keep the CPU pegged before iOS suspends us. Resuming foreground
+  // is a no-op — the next move will start a fresh search.
+  useEffect(() => {
+    if (!stockfish) return;
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state !== "active") stockfish.interrupt();
+    });
+    return () => sub.remove();
+  }, [stockfish]);
 
   const tryMove = useCallback(
     (from: Square, to: Square) => {

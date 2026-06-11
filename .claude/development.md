@@ -8,7 +8,7 @@
 
 ### Chess Engine & Logic
 - **chess.js** - move validation, game state management
-- **Stockfish WASM** - puzzle validation and hint generation (runs locally)
+- **Stockfish 17.1** - bundled as a local Expo native module at `modules/expo-stockfish/`, wired via UCI over a bridge. Used for Play vs Computer and in-game hints. See `docs/superpowers/specs/2026-05-25-stockfish-integration-design.md` for the design.
 
 ### Backend
 - **Supabase** - authentication, database, real-time features
