@@ -37,11 +37,11 @@ extern "C" {
   }
   stockfish_start();
 
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(_readQueue, ^{
     char buf[4096];
     while (true) {
-      __strong typeof(self) strongSelf = weakSelf;
+      __strong __typeof(self) strongSelf = weakSelf;
       if (strongSelf == nil || !strongSelf->_running) break;
       if (stockfish_read_line(buf, (int)sizeof(buf), 100)) {
         NSString *line = [NSString stringWithUTF8String:buf];
